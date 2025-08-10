@@ -144,7 +144,7 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
     tex.r = tex.r+delta*maxfac*0.15;
     tex.g = tex.g+delta*maxfac*0.1;
-    tex.b = tex.b+delta*maxfac*0;
+    tex.b = tex.b+delta*maxfac*0.0;
     //tex.a = 0.2*tex.a + 0.2*min(0.2, maxfac*0.1);
 
     if (uv.x > 2. * uv.x) {
