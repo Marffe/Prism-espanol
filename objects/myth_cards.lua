@@ -708,3 +708,13 @@ function Game:start_run(args)
     orig_start_run(self, args)
     G.GAME.PRISM_DJINN = false
 end
+
+local orig_init = Card.init
+function Card:init(X, Y, W, H, card, center, params)
+    if G.GAME and G.GAME.PRISM_DJINN and center.unlocked then
+        if not params then params = {} end
+        params.bypass_discovery_center = true
+        params.bypass_discovery_ui = true
+    end
+    return orig_init(self,X, Y, W, H, card, center, params)
+end
