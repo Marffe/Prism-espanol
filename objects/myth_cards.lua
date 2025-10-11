@@ -503,24 +503,21 @@ SMODS.Consumable({
 		return G.jokers.config.card_limit > #G.jokers.cards
 	end,
     use = function(self, card, area, copier)
-        G.ENTERED_TEXT = ""
-        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
-            --djinn_background_color()
-            play_sound('tarot2')
-            card:juice_up(0.3, 0.5)
-            G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.5, func = function()
-                G.CHOOSE_CARD = UIBox({
-                    definition = djinn_UIBox(card),
-                    config = {
-                        align = "cm",
-                        major = G.ROOM_ATTACH,
-                        bond = "Weak",
-                        instance_type = "POPUP",
-                    },
+        G.E_MANAGER:add_event(Event({
+			func = function()
+				G.GAME.PRISM_DJINN = true
+				G.FUNCS.overlay_menu({ 
+                    definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, {5,5,5}, {
+                        no_materialize = true, 
+                        modify_card = function(card, center) card.sticker = get_joker_win_sticker(center) end,
+                        h_mod = 0.95,
+                        back_func = "exit_overlay_menu"
+                    })
                 })
-            return true end }))
-        return true end }))
-    end
+				return true
+			end,
+		}))
+    end,
 })
 
 --Boosters
@@ -670,187 +667,44 @@ SMODS.Booster({
 })
 
 --Djinn
-G.PRISM.FUNCS.find_card = function(entered_text)
-	local function clean_string(str)
-		str = str:gsub("%b{}", ""):gsub("%s+", ""):gsub("ö", "o"):gsub("'", "")
-		if string.len(str) == 1 then
-			return str
-		end
-		return string.lower(str)
-	end
-	for k, v in pairs(G.P_CENTERS) do
-		if v.set and v.set == "Joker" and clean_string(entered_text) == clean_string(localize({ type = "name_text", set = "Joker", key = k })) then
-            local banned = false
+local orig_click = Card.click
+function Card:click()
+    if G.GAME.PRISM_DJINN then
+        if not self.debuff then
+            G.FUNCS:exit_overlay_menu()
+            local card = create_card("Joker", G.jokers, nil, nil, nil, nil,self.config.center.key)
+            card:add_to_deck()
+            G.jokers:emplace(card)
+            play_sound('timpani')
+        end
+    end
+    orig_click(self)
+end
+
+local orig_emplace = CardArea.emplace
+function CardArea:emplace(card, ...)
+    if G.GAME.PRISM_DJINN then
+        if not card.config.center.unlocked then
+           card.debuff = true 
+        else
             for _, r in ipairs(G.PRISM.djinn_banned_rarities) do
-                if v.rarity == r then
-                    banned = true
-                    break
+                if card.config.center.rarity == r then
+                    card.debuff = true
                 end
             end
-            if not banned then return k end
-		end
-	end
-    return nil
-end
-function djinn_UIBox(card)
-	G.E_MANAGER:add_event(Event({
-		blockable = false,
-		func = function()
-			G.REFRESH_ALERTS = true
-			return true
-		end,
-	}))
-	local t = create_UIBox_generic_options_djinn({
-		no_back = true,
-		colour = G.C.SET.Spectral,
-		outline_colour = G.C.DARK_EDITION,
-        blocking = true,
-        blockable = true,
-		contents = {
-			{n = G.UIT.R,
-				nodes = {
-					create_text_input({
-						colour = G.C.DARK_EDITION,
-						w = 4,
-						h = 1,
-                        prompt_text = localize("prism_enter_card"),
-						max_length = 100,
-						extended_corpus = true,
-						ref_table = G,
-						ref_value = "ENTERED_TEXT",
-						keyboard_offset = 1,
-					}),
-				},
-			},
-			{n = G.UIT.R,
-				config = { align = "cm" },
-				nodes = {
-					UIBox_button({
-						colour = G.C.DARK_EDITION,
-						button = "djinn_create",
-						label = { localize("prism_create")},
-						minw = 4,
-						focus_args = { snap_to = true },
-					}),
-				},
-			},
-			{n = G.UIT.R,
-				config = { align = "cm" },
-				nodes = {
-					UIBox_button({
-						colour = G.C.RED,
-						button = "djinn_cancel",
-						label = { localize("prism_cancel")},
-						minw = 4,
-						focus_args = { snap_to = true },
-					}),
-				},
-			},
-		},
-	})
-	return t
-end
-
-G.FUNCS.djinn_create = function()
-    local chosen_card = G.PRISM.FUNCS.find_card(G.ENTERED_TEXT)
-    if chosen_card then
-        G.CHOOSE_CARD:remove()
-        local card = create_card("Joker", G.jokers, nil, nil, nil, nil, chosen_card)
-		card:add_to_deck()
-		G.jokers:emplace(card)
-        play_sound('timpani')
-        --[[ ease_background_colour({
-            special_colour = G.DJINN_OLD_COLORS.special_colour, 
-            tertiary_colour = G.DJINN_OLD_COLORS.tertiary_colour, 
-            new_colour = G.DJINN_OLD_COLORS.new_colour
-        })
-        G.booster_pack_sparkles:remove() ]]
-    else 
-        djinn_text(localize("prism_invalid_card"))
+        end
     end
+    return orig_emplace(self, card, ...)
 end
 
-G.FUNCS.djinn_cancel = function()
-	G.CHOOSE_CARD:remove()
-    --[[ ease_background_colour({
-        new_colour = G.DJINN_OLD_COLORS.new_colour,
-        special_colour = G.DJINN_OLD_COLORS.special_colour,
-        tertiary_colour = G.DJINN_OLD_COLORS.tertiary_colour,
-    })
-    G.booster_pack_sparkles:remove() ]]
+local orig_exit_overlay_menu = G.FUNCS.exit_overlay_menu
+function G.FUNCS.exit_overlay_menu(e)
+    if G.GAME then G.GAME.PRISM_DJINN = false end
+    return orig_exit_overlay_menu(e)
 end
 
---[[ function djinn_background_color()
-    G.DJINN_OLD_COLORS = {
-        new_colour = copy_table(G.C.BACKGROUND.L),
-        special_colour = copy_table(G.C.BACKGROUND.C),
-        tertiary_colour = copy_table(G.C.BACKGROUND.D),  
-    }
-    G.booster_pack_sparkles = Particles(1, 1, 0,0, {
-        timer = 0.015,
-        scale = 0.2,
-        initialize = true,
-        lifespan = 1,
-        speed = 1.1,
-        padding = -1,
-        attach = G.ROOM_ATTACH,
-        colours = {G.C.WHITE, lighten(G.C.SET.Spectral, 0.4), lighten(G.C.SET.Spectral, 0.2), lighten(G.C.GOLD, 0.2)},
-        fill = true
-    })
-    G.booster_pack_sparkles.fade_alpha = 1
-    G.booster_pack_sparkles:fade(1, 0)
-    ease_background_colour{
-        new_colour = G.C.SET.Spectral,
-        special_colour = G.C.SET.Spectral,
-        tertiary_colour = G.C.SET.GOLD,
-    }
-end ]]
-
-function djinn_text(message)
-    attention_text({scale = 1, text = message, hold = 2, align = 'cm', offset = {x = 0,y = -3},major = G.ROOM_ATTACH})
-    delay(1.5)
+local orig_start_run = Game.start_run
+function Game:start_run(args)
+    orig_start_run(self, args)
+    G.GAME.PRISM_DJINN = false
 end
-
-function create_UIBox_generic_options_djinn(args)
-    args = args or {}
-    local back_func = args.back_func or "exit_overlay_menu"
-    local contents = args.contents or ({n=G.UIT.T, config={text = "EMPTY",colour = G.C.UI.RED, scale = 0.4}})
-    if args.infotip then 
-      G.E_MANAGER:add_event(Event({
-        blocking = false,
-        blockable = false,
-        timer = 'REAL',
-        func = function()
-            if G.OVERLAY_MENU then
-              local _infotip_object = G.OVERLAY_MENU:get_UIE_by_ID('overlay_menu_infotip')
-              if _infotip_object then 
-                _infotip_object.config.object:remove() 
-                _infotip_object.config.object = UIBox{
-                  definition = overlay_infotip(args.infotip),
-                  config = {offset = {x=0,y=0}, align = 'bm', parent = _infotip_object}
-                }
-              end
-            end
-            return true
-          end
-      }))
-    end
-  
-    return {n=G.UIT.ROOT, config = {align = "cm", minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5,padding = 0.1, r = 0.1, colour = args.bg_colour or {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0}}, nodes={
-      {n=G.UIT.R, config={align = "cm", minh = 1,r = 0.3, padding = 0.07, minw = 1, colour = args.outline_colour or G.C.JOKER_GREY, emboss = 0.1}, nodes={
-        {n=G.UIT.C, config={align = "cm", minh = 1,r = 0.2, padding = 0.2, minw = 1, colour = args.colour or G.C.L_BLACK}, nodes={
-          {n=G.UIT.R, config={align = "cm",padding = args.padding or 0.2, minw = args.minw or 7}, nodes=
-            contents
-          },
-          not args.no_back and {n=G.UIT.R, config={id = args.back_id or 'overlay_menu_back_button', align = "cm", minw = 2.5, button_delay = args.back_delay, padding =0.1, r = 0.1, hover = true, colour = args.back_colour or G.C.ORANGE, button = back_func, shadow = true, focus_args = {nav = 'wide', button = 'b', snap_to = args.snap_back}}, nodes={
-            {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true}, nodes={
-              {n=G.UIT.T, config={id = args.back_id or nil, text = args.back_label or localize('b_back'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true, func = not args.no_pip and 'set_button_pip' or nil, focus_args =  not args.no_pip and {button = args.back_button or 'b'} or nil}}
-            }}
-          }} or nil
-        }},
-      }},
-      {n=G.UIT.R, config={align = "cm"}, nodes={
-        {n=G.UIT.O, config={id = 'overlay_menu_infotip', object = Moveable()}},
-      }},
-    }}
-  end
