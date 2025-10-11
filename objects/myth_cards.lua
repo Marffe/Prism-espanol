@@ -94,7 +94,8 @@ SMODS.Consumable({
     config = {odds = 3,money = 15},
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue + 1] = {key = 'e_prism_gold_foil', set = 'Edition', config = {extra = 1}}
-        return { vars = {G.GAME.probabilities.normal,self.config.odds + (G.GAME.prism_eggs_used or 0) * 2, self.config.money} }
+        local n, d = SMODS.get_probability_vars(self,1,self.config.odds + (G.GAME.prism_eggs_used or 0) * 2,"gold_egg")
+        return { vars = {n,d, self.config.money} }
 	end,
     can_use = function(self,card)
         for _, v in pairs(G.jokers.cards) do
@@ -104,7 +105,7 @@ SMODS.Consumable({
         end
     end,
     use = function(self, card, area, copier)
-        if pseudorandom(pseudoseed('eggo_roll')) < (G.GAME.probabilities.normal / (card.ability.odds + (G.GAME.prism_eggs_used or 0) * 2)) then
+        if SMODS.pseudorandom_probability(card,"egg_roll",1,card.ability.odds + (G.GAME.prism_eggs_used or 0) * 2) then
             G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                 ease_dollars(-card.ability.money)
                 local eligible_cards = {}
