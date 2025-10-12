@@ -16,6 +16,7 @@ function G.PRISM.Joker(table)
 		SMODS.Joker(table)
 	end
 end
+
 G.PRISM.Joker({
 	key = "polydactyly",
 	atlas = "jokers",

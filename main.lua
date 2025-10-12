@@ -232,7 +232,28 @@ local function should_restart()
 	SMODS.full_restart = 0
 end
 
+local function aij_compat()
+	if All_in_Jest then
+		All_in_Jest.config.no_copy_neg = G.PRISM.config.allow_neg_copy
+	end
+end
+
+if All_in_Jest then
+	if All_in_Jest.config.no_copy_neg then
+		G.PRISM.config.allow_neg_copy = true
+	elseif G.PRISM.config.allow_neg_copy then
+		All_in_Jest.config.no_copy_neg = true
+	end
+end
+
 SMODS.current_mod.config_tab = function()
+	if All_in_Jest then
+		if All_in_Jest.config.no_copy_neg then
+			G.PRISM.config.allow_neg_copy = true
+		elseif G.PRISM.config.allow_neg_copy then
+			All_in_Jest.config.no_copy_neg = true
+		end
+	end
 	return {
 	  n = G.UIT.ROOT,
 	  config = { align = 'cm', padding = 0.07, emboss = 0.05, r = 0.1, colour = G.C.BLACK, minh = 4.5 ,minw = 7 },
@@ -280,6 +301,12 @@ SMODS.current_mod.config_tab = function()
 			{
 				n = G.UIT.C,
 				nodes = {
+					create_toggle {
+						label = localize('prism_allow_neg_copy'),
+						ref_table = G.PRISM.config,
+						ref_value = 'allow_neg_copy',
+						callback = aij_compat
+					},
 					create_toggle {
 						label = localize('prism_legacy_green'),
 						ref_table = G.PRISM.config,

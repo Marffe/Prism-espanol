@@ -302,7 +302,22 @@ end
 '''
 match_indent = true
 
-
+#negative card strip
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if not strip_edition then"
+position = "before"
+match_indent = true
+payload = '''
+if not All_in_Jest then
+	if other.edition and other.edition.negative and not G.PRISM.config.allow_neg_copy and not G.VIEWING_DECK then
+		if other.ability.set == 'Enhanced' or other.ability.set == 'Default' then
+			strip_edition = true
+		end
+	end
+end
+'''
 
 #gold foil copy reminder
 [[patches]]

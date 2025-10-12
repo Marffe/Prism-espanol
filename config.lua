@@ -4,4 +4,5 @@ return {
   blinds_enabled = true,
   green_old = false,
   pizza_music = true,
+  allow_neg_copy = false
 }

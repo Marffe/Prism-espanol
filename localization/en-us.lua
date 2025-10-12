@@ -889,9 +889,10 @@ return {
             prism_myth_enabled = "Enable Myth Cards",
             prism_blinds_enabled = "Enable Boss Blinds",
             prism_legacy_green = "Use Old Green Seal",
+            prism_allow_neg_copy = "Allow copying negative cards",
             prism_feature_enable = "Select features:",
             prism_pizza_music = "Pizza Music",
-            prism_requires_restart = "Requires restart!",
+            prism_requires_restart = "The game will restart automatically if necessary",
             b_open_link = "Opens in browser",
         },
         v_dictionary = {
