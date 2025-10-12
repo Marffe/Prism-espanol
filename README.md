@@ -31,8 +31,7 @@ You can see a more detailed list of additions in the mod's [Wiki](https://balatr
 
 # Credits
 - Chinese localization by 姓氏是个毛 and VisJoker
-- Spanish (Mexico) localization by Frander
-- Spanish (Spain) localization by Marffe
+- Spanish localization by Frander and Marffe
 - Vietnamese localization by Shinosan
 - French localization by Alexandria Thurnherr, juno_r1 and others
 - Ideas and concept art by Gaussian
