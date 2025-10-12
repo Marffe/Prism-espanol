@@ -505,11 +505,10 @@ SMODS.Consumable({
     use = function(self, card, area, copier)
         G.E_MANAGER:add_event(Event({
 			func = function()
-				G.GAME.PRISM_DJINN = true
+				G.GAME.prism_choosing_card = "djinn"
 				G.FUNCS.overlay_menu({ 
                     definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, {5,5,5}, {
-                        no_materialize = true, 
-                        modify_card = function(card, center) card.sticker = get_joker_win_sticker(center) end,
+                        no_materialize = true,
                         h_mod = 0.95,
                         back_func = "exit_overlay_menu"
                     })
@@ -665,56 +664,3 @@ SMODS.Booster({
         G.booster_pack_sparkles:fade(1, 0)
     end,
 })
-
---Djinn
-local orig_click = Card.click
-function Card:click()
-    if G.GAME.PRISM_DJINN then
-        if not self.debuff then
-            G.FUNCS:exit_overlay_menu()
-            local card = create_card("Joker", G.jokers, nil, nil, nil, nil,self.config.center.key)
-            card:add_to_deck()
-            G.jokers:emplace(card)
-            play_sound('timpani')
-        end
-    end
-    orig_click(self)
-end
-
-local orig_emplace = CardArea.emplace
-function CardArea:emplace(card, ...)
-    if G.GAME.PRISM_DJINN then
-        if not card.config.center.unlocked then
-           card.debuff = true 
-        else
-            for _, r in ipairs(G.PRISM.djinn_banned_rarities) do
-                if card.config.center.rarity == r then
-                    card.debuff = true
-                end
-            end
-        end
-    end
-    return orig_emplace(self, card, ...)
-end
-
-local orig_exit_overlay_menu = G.FUNCS.exit_overlay_menu
-function G.FUNCS.exit_overlay_menu(e)
-    if G.GAME then G.GAME.PRISM_DJINN = false end
-    return orig_exit_overlay_menu(e)
-end
-
-local orig_start_run = Game.start_run
-function Game:start_run(args)
-    orig_start_run(self, args)
-    G.GAME.PRISM_DJINN = false
-end
-
-local orig_init = Card.init
-function Card:init(X, Y, W, H, card, center, params)
-    if G.GAME and G.GAME.PRISM_DJINN and center.unlocked then
-        if not params then params = {} end
-        params.bypass_discovery_center = true
-        params.bypass_discovery_ui = true
-    end
-    return orig_init(self,X, Y, W, H, card, center, params)
-end

@@ -194,3 +194,65 @@ function G.PRISM.is_even(card)
     return (G.PRISM.is_numbered(card) and card.base.nominal%2 == 0)
     or (next(SMODS.find_card('j_mxms_perspective')) and card:get_id() == 6)--compat with maximus' prespective
 end
+
+--Choosing cards
+function G.PRISM.choose_card(source,chosen_card)
+    print(source)
+    print(chosen_card)
+    if source == "djinn" then
+        local card = create_card("Joker", G.jokers, nil, nil, nil, nil,chosen_card)
+        card:add_to_deck()
+        G.jokers:emplace(card)
+        play_sound('timpani')
+    end
+end
+
+local orig_click = Card.click
+function Card:click()
+    if G.GAME.prism_choosing_card then
+        if not self.debuff then
+            local source = G.GAME.prism_choosing_card
+            G.FUNCS:exit_overlay_menu()
+            G.PRISM.choose_card(source,self.config.center.key)
+        end
+    end
+    orig_click(self)
+end
+
+local orig_emplace = CardArea.emplace
+function CardArea:emplace(card, ...)
+    if G.GAME.prism_choosing_card == "djinn" then
+        if not card.config.center.unlocked then
+           card.debuff = true 
+        else
+            for _, r in ipairs(G.PRISM.djinn_banned_rarities) do
+                if card.config.center.rarity == r then
+                    card.debuff = true
+                end
+            end
+        end
+    end
+    return orig_emplace(self, card, ...)
+end
+
+local orig_exit_overlay_menu = G.FUNCS.exit_overlay_menu
+function G.FUNCS.exit_overlay_menu(e)
+    if G.GAME then G.GAME.prism_choosing_card = nil end
+    return orig_exit_overlay_menu(e)
+end
+
+local orig_start_run = Game.start_run
+function Game:start_run(args)
+    orig_start_run(self, args)
+    G.GAME.prism_choosing_card = nil
+end
+
+local orig_init = Card.init
+function Card:init(X, Y, W, H, card, center, params)
+    if G.GAME and G.GAME.prism_choosing_card and center.unlocked then
+        if not params then params = {} end
+        params.bypass_discovery_center = true
+        params.bypass_discovery_ui = true
+    end
+    return orig_init(self,X, Y, W, H, card, center, params)
+end

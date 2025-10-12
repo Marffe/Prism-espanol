@@ -91,7 +91,7 @@ SMODS.Sound({
 	key = "myth_music",
 	path = "myth_music.ogg",
 	select_music_track = function()
-		return (G.pack_cards and G.pack_cards.cards and G.pack_cards.cards[1] and G.pack_cards.cards[1].ability.set == "Myth") or G.GAME and G.GAME.PRISM_DJINN
+		return (G.pack_cards and G.pack_cards.cards and G.pack_cards.cards[1] and G.pack_cards.cards[1].ability.set == "Myth") or G.GAME and G.GAME.prism_choosing_card == "djinn"
 	end,
 })
 SMODS.Sound({
