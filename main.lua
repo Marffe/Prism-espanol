@@ -97,7 +97,7 @@ SMODS.Sound({
 SMODS.Sound({
 	key = "pizza_music",
 	path = "pizza_theme.ogg",
-	sync = false,
+	sync = true,
 	pitch = 1,
 	select_music_track = function()
 		return
