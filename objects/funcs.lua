@@ -197,8 +197,6 @@ end
 
 --Choosing cards
 function G.PRISM.choose_card(source,chosen_card)
-    print(source)
-    print(chosen_card)
     if source == "djinn" then
         local card = create_card("Joker", G.jokers, nil, nil, nil, nil,chosen_card)
         card:add_to_deck()
