@@ -202,6 +202,11 @@ function G.PRISM.choose_card(source,chosen_card)
         card:add_to_deck()
         G.jokers:emplace(card)
         play_sound('timpani')
+    elseif source == "paw" and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+        local card = create_card("Spectral", G.consumeables, nil, nil, nil, nil,chosen_card)
+        card:add_to_deck()
+        G.consumeables:emplace(card)
+        play_sound('timpani')
     end
 end
 
@@ -228,6 +233,11 @@ function CardArea:emplace(card, ...)
                     card.debuff = true
                 end
             end
+        end
+    end
+    if G.GAME.prism_choosing_card == "paw" then
+        if card.config.center.hidden then
+           card.debuff = true
         end
     end
     return orig_emplace(self, card, ...)

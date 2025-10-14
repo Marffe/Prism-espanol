@@ -391,7 +391,16 @@ return {
                     "{C:planet}Planet{} used this ante",
                     "{C:inactive}(Currently {C:attention}#1#{C:inactive} Planets played)"
                 },
-            }
+            },
+            j_prism_monkey_paw = {
+                name = "Monkey Paw",
+                text = {"After defeating {C:attention}Boss Blind{},",
+                    "wish for {C:dark_edition}any {C:spectral}Spectral{}",
+                    "card to create, but lose",
+                    "{C:red}-#1#{} hand size permanently",
+                    "{C:inactive}(Must have room)"
+                }
+            },
         },
         Back = {
             b_prism_purple = {

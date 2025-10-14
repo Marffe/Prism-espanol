@@ -1996,6 +1996,42 @@ G.PRISM.Joker({
 	
 })
 G.PRISM.Joker({
+	key = "monkey_paw",
+	atlas = "jokers",
+	pos = {x=3,y=12},
+	rarity = 3,
+	cost = 7,
+	unlocked = true,
+	discovered = false,
+	blueprint_compat = true,
+	eternal_compat = true,
+	perishable_compat = true,
+	config = {extra = 1},
+	loc_vars = function(self, info_queue, center)
+		return { vars = {center.ability.extra} }
+	end,
+	calculate = function(self, card, context)
+        if context.end_of_round and context.cardarea == G.jokers and G.GAME.blind.boss
+		and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+			G.E_MANAGER:add_event(Event({
+			func = function()
+				G.hand:change_size(-card.ability.extra)
+				G.GAME.prism_choosing_card = "paw"
+				G.FUNCS.overlay_menu({ 
+                    definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Spectral, {4,5}, {
+                        no_materialize = true,
+                        h_mod = 0.95,
+                        back_func = "exit_overlay_menu"
+                    })
+                })
+				return true
+			end,
+		}))
+		end
+	end
+}) 
+
+G.PRISM.Joker({
 	key = "hypercube",
 	atlas = "jokers",
 	pos = {x=2,y=10},
