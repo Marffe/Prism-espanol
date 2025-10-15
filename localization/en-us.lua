@@ -401,6 +401,13 @@ return {
                     "{C:inactive}(Must have room)"
                 }
             },
+            j_prism_scale = {
+                name = "Balance Scale",
+                text = {"{C:chips}+#1#{} Chips per Joker to the {C:attention}Right",
+                    "{C:red}+#2#{} Mult per Joker to the {C:attention}Left",
+                    "{C:inactive}(Currently {C:chips}+#3#{C:inactive} Chips and {C:red}+#4#{C:inactive} Mult)"
+                }
+            },
         },
         Back = {
             b_prism_purple = {

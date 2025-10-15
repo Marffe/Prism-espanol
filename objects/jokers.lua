@@ -101,7 +101,6 @@ G.PRISM.Joker({
 			}
 		end
 	end
-
 })
 G.PRISM.Joker({
 	key = "hit_record",
@@ -120,7 +119,65 @@ G.PRISM.Joker({
 		end
 	end
 })
-
+G.PRISM.Joker({
+	key = "scale",
+	atlas = "jokers",
+	pos = {x=3,y=13},
+	rarity = 1,
+	cost = 6,
+	unlocked = true,
+	discovered = false,
+	blueprint_compat = true,
+	eternal_compat = true,
+	perishable_compat = true,
+	config = {extra = {chips = 20, mult = 4}},
+	loc_vars = function(self, info_queue, center)
+		local to_right = 0
+		local to_left = 0
+		if G.jokers and G.jokers.cards and center.area == G.jokers then
+			local pos = nil
+			for i = 1, #G.jokers.cards do
+				if G.jokers.cards[i] == center then
+					pos = i
+					break
+				end
+			end
+			if pos then
+				to_right = #G.jokers.cards - pos
+				to_left = pos - 1
+			end
+		end
+		return { vars = {
+			center.ability.extra.chips, 
+			center.ability.extra.mult,
+			center.ability.extra.chips * to_right,
+			center.ability.extra.mult * to_left
+		} }
+	end,
+	calculate = function(self, card, context)
+		if context.joker_main then
+			local to_right = 0
+			local to_left = 0
+			if G.jokers and G.jokers.cards and card.area == G.jokers then
+				local pos = nil
+				for i = 1, #G.jokers.cards do
+					if G.jokers.cards[i] == card then
+						pos = i
+						break
+					end
+				end
+				if pos then
+					to_right = #G.jokers.cards - pos
+					to_left = pos - 1
+				end
+			end
+			return{
+				chips = card.ability.extra.chips * to_right,
+				mult = card.ability.extra.mult * to_left
+			}
+		end
+	end
+})
 G.PRISM.Joker({
 	key = "motherboard",
 	atlas = "jokers",
