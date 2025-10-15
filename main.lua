@@ -85,7 +85,7 @@ function SMODS.current_mod.reset_game_globals(run_start)
 end
 
 if G.PRISM.config.jokers_enabled then  SMODS.load_file('objects/jokers.lua')() end
-if G.PRISM.config.myth_enabled then SMODS.load_file('objects/enhancements.lua')() end
+if G.PRISM.config.enhance_enabled then SMODS.load_file('objects/enhancements.lua')() end
 if G.PRISM.config.myth_enabled then SMODS.load_file('objects/myth_cards.lua')() end
 SMODS.load_file('objects/editions.lua')()
 SMODS.load_file('objects/funcs.lua')()
@@ -299,6 +299,12 @@ SMODS.current_mod.config_tab = function()
 					label = localize('prism_myth_enabled'),
 					ref_table = G.PRISM.config,
 					ref_value = 'myth_enabled',
+					callback = should_restart
+				},
+				create_toggle {
+					label = localize('prism_enhance_enabled'),
+					ref_table = G.PRISM.config,
+					ref_value = 'enhance_enabled',
 					callback = should_restart
 				},
 				create_toggle {

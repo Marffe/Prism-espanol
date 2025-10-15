@@ -24,8 +24,13 @@ SMODS.UndiscoveredSprite({
     pos = { x = 0, y = 0 },
     no_overlay = true
 })
-
-SMODS.Consumable({
+function G.PRISM.Consumable(table)
+	if table.dependency or table.dependency == nil then
+		SMODS.Consumable(table)
+	end
+end
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_dwarf',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -40,7 +45,8 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_dragon',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -55,7 +61,8 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_siren',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -70,7 +77,8 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_yeti',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -85,7 +93,7 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_egg',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -143,7 +151,7 @@ SMODS.Consumable({
     end
 
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_mirror',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -171,7 +179,7 @@ SMODS.Consumable({
     end
 
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_druid',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -215,7 +223,7 @@ SMODS.Consumable({
         G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_beast',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -234,7 +242,7 @@ SMODS.Consumable({
         end
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_wizard',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -271,7 +279,7 @@ SMODS.Consumable({
         G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
     end
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_treant',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -308,7 +316,7 @@ SMODS.Consumable({
         G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_ooze',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -334,7 +342,7 @@ SMODS.Consumable({
     end
 })
 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_colossus',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -360,7 +368,7 @@ SMODS.Consumable({
     end
 
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_gnome',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -383,7 +391,7 @@ SMODS.Consumable({
 
 })
 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_kraken',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -404,7 +412,7 @@ SMODS.Consumable({
         return true end }))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_roc',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -425,7 +433,7 @@ SMODS.Consumable({
         return true end }))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_ghoul',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -490,7 +498,7 @@ SMODS.Consumable({
     end
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'spectral_djinn',
     set = 'Spectral',
     atlas = 'prismmyth',

@@ -903,6 +903,7 @@ return {
             prism_switch = "Switch",
             prism_jokers_enabled = "Enable Jokers",
             prism_myth_enabled = "Enable Myth Cards",
+            prism_enhance_enabled = "Enable Enhancements",
             prism_blinds_enabled = "Enable Boss Blinds",
             prism_legacy_green = "Use Old Green Seal",
             prism_allow_neg_copy = "Allow copying negative cards",

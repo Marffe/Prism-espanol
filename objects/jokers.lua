@@ -650,7 +650,7 @@ G.PRISM.Joker({
 	end
 })
 G.PRISM.Joker({
-	dependency = G.PRISM.config.myth_enabled,
+	dependency = G.PRISM.config.enhance_enabled,
 	key = "geo_hammer",
 	atlas = "jokers",
 	pos = {x=0,y=3},
@@ -1530,7 +1530,7 @@ G.PRISM.Joker({
 	
 })
 G.PRISM.Joker({
-	dependency = G.PRISM.config.myth_enabled,
+	dependency = G.PRISM.config.enhance_enabled,
 	key = "amethyst",
 	atlas = "jokers",
 	pos = {x=1,y=7},
