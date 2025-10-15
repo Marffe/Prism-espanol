@@ -623,6 +623,21 @@ return {
                     "the {C:attention}right{} card's {C:attention}Suit{}"
                 }
             },
+            c_prism_myth_fae = {
+                name = "Faerie",
+                text = {"Earn {C:money}$#1#{} per level",
+                    "of highest level {C:attention}poker",
+                    "{C:attention}hand {C:inactive}(Max of {C:money}$#2#{C:inactive})",
+                    "{C:inactive}(Currently {C:money}$#3#{C:inactive})",
+                }
+            },
+            c_prism_myth_opus = {
+                name = "Magnum Opus",
+                text = {"Enhances {C:attention}#1#{} selected",
+                    "card to the {C:attention}most common",
+                    "{C:enhanced}Enhancement{} in full deck"
+                }
+            },
             c_prism_myth_egg = {
                 name = "Golden Egg",
                 text = {"Lose {C:money}$#3#{} and",

@@ -14,7 +14,7 @@ SMODS.ConsumableType({
     key = "Myth",
     primary_colour = G.PRISM.C.myth_1,
     secondary_colour = G.PRISM.C.myth_2,
-    collection_rows = {4, 4},
+    collection_rows = {4, 5},
     shop_rate = 2,
     default = 'c_prism_myth_gnome'
 })
@@ -243,6 +243,60 @@ G.PRISM.Consumable({
     end
 })
 G.PRISM.Consumable({
+    key = 'myth_opus',
+    set = 'Myth',
+    atlas = 'prismmyth',
+    pos = {x=9, y=0},
+    discovered = false,
+    config = {max_highlighted = 1},
+    loc_vars = function(self, info_queue)
+		return { vars = {self.config.max_highlighted} }
+	end,
+    can_use = function(self, card)
+		return #G.hand.highlighted <= self.config.max_highlighted and #G.hand.highlighted >= 1
+	end,
+    use = function(self, card, area, copier)
+        local enhancements = {}
+        for _,v in ipairs(G.playing_cards) do
+            if v.config.center.key ~= "c_base" then
+            enhancements[v.config.center.key] = (enhancements[v.config.center.key] or 0) + 1
+            end
+        end
+        local pollable_enhance = {}
+        local enhanc_count = 0
+        for k,v in pairs(enhancements) do
+            if v > enhanc_count then
+                enhanc_count = v
+                pollable_enhance = {}
+                table.insert(pollable_enhance,k)
+            elseif v == enhanc_count then
+                table.insert(pollable_enhance,k)
+            end
+        end
+        local enhancement = pseudorandom_element(pollable_enhance,"opus") 
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+            play_sound('tarot1')
+            card:juice_up(0.3, 0.5)
+            return true end }))
+        for i=1, #G.hand.highlighted do
+            local percent = 1.15 - (i-0.999)/(#G.hand.highlighted-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('card1', percent);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        for i=1, #G.hand.highlighted do
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.4,func = function()
+                if enhancement then
+                    G.hand.highlighted[i]:set_ability(G.P_CENTERS[enhancement])
+                end
+            return true end }))
+        end
+        for i=1, #G.hand.highlighted do
+            local percent = 0.85 + (i-0.999)/(#G.hand.highlighted-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('tarot2', percent, 0.6);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
+    end
+})
+G.PRISM.Consumable({
     key = 'myth_wizard',
     set = 'Myth',
     atlas = 'prismmyth',
@@ -388,7 +442,6 @@ G.PRISM.Consumable({
             add_tag(Tag('tag_prism_gnome'))
         return true end }))
     end
-
 })
 
 G.PRISM.Consumable({
@@ -525,6 +578,39 @@ G.PRISM.Consumable({
 			end,
 		}))
     end,
+})
+G.PRISM.Consumable({
+    key = 'myth_fae',
+    set = 'Myth',
+    atlas = 'prismmyth',
+    pos = {x=9, y=1},
+    discovered = false,
+    config = {dollars = 3, max = 30},
+    loc_vars = function(self, info_queue, card)
+        local level = 0
+        for k, v in pairs(G.GAME.hands) do
+            if v.visible and to_big(v.level) > to_big(level) then
+                level = v.level
+            end
+        end
+        return {vars = {self.config.dollars,self.config.max, math.min(self.config.dollars * level, self.config.max)}}
+    end,
+    can_use = function(self,card)
+        return true
+    end,
+    use = function(self, card, area, copier)
+        local level = 0
+        for k, v in pairs(G.GAME.hands) do
+            if v.visible and to_big(v.level) > to_big(level) then
+                level = v.level
+            end
+        end
+        G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.4,func = function()
+            play_sound('tarot1')
+            card:juice_up(0.3, 0.5)
+            ease_dollars(math.min(self.config.dollars * level, self.config.max))
+        return true end }))
+    end
 })
 
 --Boosters
