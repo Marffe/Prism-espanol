@@ -219,7 +219,6 @@ function Card:click()
             G.PRISM.choose_card(source,self.config.center.key)
         end
     end
-    if self.config.center.weight then print(self.config.center.weight) end
     orig_click(self)
 end
 
