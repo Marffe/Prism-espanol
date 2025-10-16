@@ -479,6 +479,18 @@ return {
                     "{C:attention,T:v_prism_booster_box}Booster Box{}"
                 },
             },
+            sleeve_prism_alchemysleeve = {
+                name = "Alchemist's Sleeve",
+                text = {"Each {C:money}Shop{} has an",
+                    "{C:attention}extra {C:myth_light,T:c_prism_myth_opus}Magnum Opus{}",
+                },
+            },
+            sleeve_prism_alchemysleeve_alt = {
+                name = "Alchemist's Sleeve",
+                text = {"Start run with",
+                    "{C:attention,T:v_crystal_ball}Crystal Ball{}"
+                },
+            },
         },
         Enhanced = {
             m_prism_crystal = {

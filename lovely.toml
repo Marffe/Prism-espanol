@@ -369,7 +369,7 @@ end
 '''
 payload = ''' 
 if G.GAME.modifiers.alchemy_deck then
-	G.shop_jokers:emplace(create_card("Myth",G.shop_jokers,nil,nil,true,false,"c_prism_myth_opus"))
+	G.shop_jokers:emplace(create_card("Myth",G.shop_jokers,nil,nil,false,false,"c_prism_myth_opus"))
 	G.GAME.prism_created_opus = true
 	G.shop:recalculate()
 end
