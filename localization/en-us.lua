@@ -432,6 +432,12 @@ return {
                     "{C:attention,T:v_reroll_surplus}Reroll Surplus{}"
                 },
             },
+            b_prism_alchemy = {
+                name = "Alchemist's Deck",
+                text = {"Each {C:money}Shop{} has an",
+                    "{C:attention}extra {C:myth_light,T:c_prism_myth_opus}Magnum Opus{}",
+                },
+            },
         },
         Sleeve = {
             sleeve_prism_purplesleeve = {

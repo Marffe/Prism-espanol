@@ -35,6 +35,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=1, y=0},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_crystal", max_highlighted = 2},
     effect = 'Enhance',
@@ -51,6 +52,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=2, y=0},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_burnt", max_highlighted = 2},
     effect = 'Enhance',
@@ -67,6 +69,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=6, y=1},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_echo", max_highlighted = 2},
     effect = 'Enhance',
@@ -83,6 +86,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=8, y=1},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_ice", max_highlighted = 2},
     effect = 'Enhance',
@@ -98,6 +102,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=8, y=0},
+    cost = 4,
     discovered = false,
     config = {odds = 3,money = 15},
     loc_vars = function(self, info_queue)
@@ -156,6 +161,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=4, y=0},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue + 1] = {key = 'e_negative_playing_card', set = 'Edition', config = {extra = 1}}
@@ -184,6 +190,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=0, y=1},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 2},
     loc_vars = function(self, info_queue)
@@ -228,6 +235,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=3, y=1},
+    cost = 4,
     discovered = false,
     can_use = function(self,card)
         return G.consumeables.config.card_limit > #G.consumeables.cards or card.area == G.consumeables
@@ -247,6 +255,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=9, y=0},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 1},
     loc_vars = function(self, info_queue)
@@ -301,6 +310,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=1, y=1},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 3},
     loc_vars = function(self, info_queue)
@@ -338,6 +348,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=7, y=0},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 3},
     loc_vars = function(self, info_queue)
@@ -375,6 +386,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=5, y=0},
+    cost = 4,
     discovered = false,
     config = {seal_conv = G.PRISM.config.old_green and "prism_green_old" or "prism_green", max_highlighted = 1},
     loc_vars = function(self, info_queue)
@@ -401,6 +413,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=4, y=1},
+    cost = 4,
     discovered = false,
     config = {seal_conv = "prism_moon", max_highlighted = 1},
     loc_vars = function(self, info_queue)
@@ -427,6 +440,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=3, y=0},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue+1] = {key = 'tag_prism_gnome', set = 'Tag',specific_vars = {17}}
@@ -449,6 +463,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=5, y=1},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue+1] = {key = 'tag_juggle', set = 'Tag',specific_vars = {3}}
@@ -470,6 +485,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=6, y=0},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue+1] = {key = 'tag_double', set = 'Tag'}
@@ -491,6 +507,7 @@ G.PRISM.Consumable({
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=2, y=1},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 1,chips_mult = 3},
     loc_vars = function(self, info_queue)
@@ -552,38 +569,11 @@ G.PRISM.Consumable({
 
 })
 G.PRISM.Consumable({
-    key = 'spectral_djinn',
-    set = 'Spectral',
-    atlas = 'prismmyth',
-    pos = {x=7, y=1},
-    discovered = false,
-    cost = 4,
-    hidden = true,
-    soul_set = "Myth",
-    can_use = function(self, card)
-		return G.jokers.config.card_limit > #G.jokers.cards
-	end,
-    use = function(self, card, area, copier)
-        G.E_MANAGER:add_event(Event({
-			func = function()
-				G.GAME.prism_choosing_card = "djinn"
-				G.FUNCS.overlay_menu({ 
-                    definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, {5,5,5}, {
-                        no_materialize = true,
-                        h_mod = 0.95,
-                        back_func = "exit_overlay_menu"
-                    })
-                })
-				return true
-			end,
-		}))
-    end,
-})
-G.PRISM.Consumable({
     key = 'myth_fae',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=9, y=1},
+    cost = 4,
     discovered = false,
     config = {dollars = 3, max = 30},
     loc_vars = function(self, info_queue, card)
@@ -611,6 +601,34 @@ G.PRISM.Consumable({
             ease_dollars(math.min(self.config.dollars * level, self.config.max))
         return true end }))
     end
+})
+G.PRISM.Consumable({
+    key = 'spectral_djinn',
+    set = 'Spectral',
+    atlas = 'prismmyth',
+    pos = {x=7, y=1},
+    discovered = false,
+    cost = 4,
+    hidden = true,
+    soul_set = "Myth",
+    can_use = function(self, card)
+		return G.jokers.config.card_limit > #G.jokers.cards
+	end,
+    use = function(self, card, area, copier)
+        G.E_MANAGER:add_event(Event({
+			func = function()
+				G.GAME.prism_choosing_card = "djinn"
+				G.FUNCS.overlay_menu({ 
+                    definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, {5,5,5}, {
+                        no_materialize = true,
+                        h_mod = 0.95,
+                        back_func = "exit_overlay_menu"
+                    })
+                })
+				return true
+			end,
+		}))
+    end,
 })
 
 --Boosters

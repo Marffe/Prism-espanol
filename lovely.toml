@@ -110,17 +110,6 @@ payload = '''
 '''
 match_indent = true
 
-#Allows to play more than 5 cards
-[[patches]]
-[patches.pattern]
-target = 'functions/button_callbacks.lua'
-pattern = """if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then"""
-position = 'at'
-payload = """
-if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > G.hand.config.highlighted_limit then
-"""
-match_indent = true
-
 #Purple deck
 [[patches]]
 [patches.pattern]
@@ -366,5 +355,32 @@ target = 'functions/common_events.lua'
 position = 'after'
 pattern = 'new_card:set_edition(other.edition or {}, nil, true)'
 payload = '''G.GAME.prism_shork_copy = nil
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+position = 'after'
+pattern = '''
+for i = 1, G.GAME.shop.joker_max - #G.shop_jokers.cards do
+	G.shop_jokers:emplace(create_card_for_shop(G.shop_jokers))
+end
+'''
+payload = ''' 
+if G.GAME.modifiers.alchemy_deck then
+	G.shop_jokers:emplace(create_card("Myth",G.shop_jokers,nil,nil,true,false,"c_prism_myth_opus"))
+	G.GAME.prism_created_opus = true
+	G.shop:recalculate()
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+position = 'after'
+pattern = '''G.FUNCS.reroll_shop = function(e)'''
+payload = '''if G.GAME.modifiers.alchemy_deck then G.shop:recalculate() end
 '''
 match_indent = true
