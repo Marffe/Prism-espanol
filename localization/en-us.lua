@@ -488,7 +488,7 @@ return {
             sleeve_prism_alchemysleeve_alt = {
                 name = "Alchemist's Sleeve",
                 text = {"Start run with",
-                    "{C:attention,T:v_crystal_ball}Crystal Ball{}"
+                    "{C:tarot,T:v_crystal_ball}Crystal Ball{}"
                 },
             },
         },
