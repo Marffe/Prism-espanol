@@ -8,10 +8,11 @@ priority = 12
 [patches.pattern]
 target = '''functions/state_events.lua'''
 pattern = "for i=1, hand_space do*"
-position = "before"
+position = "at"
 payload = '''
-hand_space = hand_space + (G.GAME.prism_extra_draw or 0)
+local draw = hand_space + (G.GAME.prism_extra_draw or 0)
 G.GAME.prism_extra_draw = 0
+for i=1, draw do
 '''
 match_indent = true
 
