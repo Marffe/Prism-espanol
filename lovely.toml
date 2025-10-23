@@ -359,6 +359,7 @@ payload = '''G.GAME.prism_shork_copy = nil
 '''
 match_indent = true
 
+#alchemy deck
 [[patches]]
 [patches.pattern]
 target = 'game.lua'
@@ -370,18 +371,9 @@ end
 '''
 payload = ''' 
 if G.GAME.modifiers.alchemy_deck then
-	G.shop_jokers:emplace(create_card("Myth",G.shop_jokers,nil,nil,false,false,"c_prism_myth_opus"))
-	G.GAME.prism_created_opus = true
-	G.shop:recalculate()
+	local opus = create_card("Myth",G.shop_jokers,nil,nil,false,false,"c_prism_myth_opus")
+	G.shop_jokers:emplace(opus)
+	create_shop_card_ui(opus)
 end
-'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = 'functions/button_callbacks.lua'
-position = 'after'
-pattern = '''G.FUNCS.reroll_shop = function(e)'''
-payload = '''if G.GAME.modifiers.alchemy_deck then G.shop:recalculate() end
 '''
 match_indent = true

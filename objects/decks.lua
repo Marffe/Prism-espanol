@@ -61,18 +61,6 @@ G.PRISM.Back({
 	end,
     unlock_condition = {type = 'win_deck', deck = 'b_prism_ancient'},
 })
-local orig_recalculate = UIBox.recalculate
-function UIBox:recalculate()
-	if G.GAME.modifiers.alchemy_deck and self == G.shop and G.shop_jokers then
-		if G.GAME.prism_created_opus then
-			G.shop_jokers.T.w = math.min((G.GAME.shop.joker_max+1)*1.02*G.CARD_W,4.08*G.CARD_W)
-			G.GAME.prism_created_opus = false
-		else
-			G.shop_jokers.T.w = math.min(G.GAME.shop.joker_max*1.02*G.CARD_W,4.08*G.CARD_W)
-		end
-	end 
-	return orig_recalculate(self)
-end 
 
 --[[ local orig_update_shop = Game.update_shop
 function Game:update_shop(dt) 
