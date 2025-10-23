@@ -386,7 +386,23 @@ return {
                     "{C:attention}unique{} utilisée dans cette mise",
                     "{C:inactive}(Actuellement {C:attention}#1#{C:inactive} planètes jouées)"
                 },
-            }
+            },
+	    j_prism_monkey_paw = {
+                name = "Patte de Singe",
+                text = {"Après avoir battu {C:attention}la Blinde Boss{},",
+                    "souhaitez créer {C:dark_edition}n'importe quelle{}",
+                    "{C:spectral}Carte Spectrale{}",
+		    "Taille de la main {C:red}-#1#{} {C:attention}irréparablement{}",
+                    "{C:inactive}(Selon la place disponible)"
+                },
+            },
+            j_prism_scale = {
+                name = "Balance",
+                text = {"{C:chips}+#1#{} Jetons par Joker à {C:attention}droite",
+                    "{C:red}+#2#{} Multi. par Joker à {C:attention}gauche",
+                    "{C:inactive}(Actuellement {C:chips}+#3#{C:inactive}Jetons et {C:red}+#4#{C:inactive} Multi.)"
+                },
+            },
         },
         Back = {
             b_prism_purple = {
@@ -409,6 +425,12 @@ return {
                 text = {"Commencez la partie",
                     "avec {C:attention,T:v_overstock_norm}Excédent{} et",
                     "{C:attention,T:v_reroll_surplus}Renouvellement en pagaille{}"
+                },
+            },
+	    b_prism_alchemy = {
+                name = "Jeu d'Alchimiste",
+                text = {"Chaque {C:money}magasin{} contient un",
+                    "{C:myth_light,T:c_prism_myth_opus}Grand Œuvre{} {C:attention}supplémentaire{}",
                 },
             },
         },
@@ -450,6 +472,18 @@ return {
                 name = "Chemise de Surproduction",
                 text = {"Commencez la partie avec",
                     "{C:attention,T:v_prism_booster_box}Coupon de display{}"
+                },
+            },
+            sleeve_prism_alchemysleeve = {
+                name = "Chemise d'Alchimiste",
+                text = {"Chaque {C:money}magasin{} contient un",
+                    "{C:myth_light,T:c_prism_myth_opus}Grand Œuvre{} {C:attention}supplémentaire{}",
+                },
+            },
+            sleeve_prism_alchemysleeve_alt = {
+                name = "Chemise d'Alchimiste",
+                text = {"Commencez la partie avec",
+                    "{C:tarot,T:v_crystal_ball}Boule de cristal{}"
                 },
             },
         },
@@ -602,6 +636,21 @@ return {
                     "{C:attention}couleur{} de la carte de {C:attention}droite{}"
                 }
             },
+	    c_prism_myth_fae = {
+                name = "Fée",
+                text = {"Gagnez {C:money}$#1#{} par niveau",
+                    "de la {C:attention}main de poker{}",
+                    "le plus haut {C:inactive}({}{C:money}$#2#{C:inactive} au maximum){}",
+                    "{C:inactive}(Actuellement {C:money}$#3#{C:inactive})",
+                }
+            },
+            c_prism_myth_opus = {
+                name = "Grand Œuvre",
+                text = {"Améliore {C:attention}#1#{} carte",
+                    "selectionée à l'{C:enhanced}Amélioration{}",
+                    "{C:attention}le plus fréquent{} dans votre jeu complet"
+                }
+            },
             c_prism_myth_egg = {
                 name = "Œuf d'Or", 
                 text = {"Perdez {C:money}$#3#{} et",
@@ -616,7 +665,7 @@ return {
         Spectral = {
             c_prism_spectral_djinn = {
                 name = "Djinni",
-                text = {"Souhaite créer",
+                text = {"Souhaitez créer",
                     "{C:dark_edition}n'importe quel{} {C:attention}Joker{}",
                     "{C:inactive}(Jokers Légendaires",
                     "{C:inactive}exclus)"
