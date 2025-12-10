@@ -1726,12 +1726,8 @@ G.PRISM.Joker({
 	perishable_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and not context.before and not context.after and hand_chips and mult then
-			local old_chips = hand_chips
-			local old_mult = mult
-			hand_chips = mod_chips(old_mult)
-			mult = mod_mult(old_chips)
-			update_hand_text({ delay = 0 }, { mult = mult, chips = hand_chips })
 			return {
+				swap = true,
 				message = localize("k_uno_reverse"),
 				colour = G.C.RED
 			}
@@ -1920,14 +1916,9 @@ G.PRISM.Joker({
 		end
 		if context.joker_main then
 			if context.scoring_name == card.ability.poker_hand_1 or context.scoring_name == card.ability.poker_hand_2 then
-				local tot = hand_chips + mult
-				hand_chips = math.floor(tot/2)
-				mult = math.floor(tot/2)
-				update_hand_text({delay = 0}, {mult = mult, chips = hand_chips})
 				card.ability.reset = true
 				return {
-					message = localize("k_balanced"),
-					colour = { 0.8, 0.45, 0.85, 1 },
+					balance = true,
 				}
 			end
 		end
