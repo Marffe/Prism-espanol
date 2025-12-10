@@ -530,7 +530,7 @@ G.PRISM.Consumable({
                     local left_card = hand_i and G.hand.cards[hand_i-1]
                     local right_card = hand_i and G.hand.cards[hand_i+1]
                     local chips = SMODS.has_no_rank(target) and 0 or target.base.nominal * card.ability.chips_mult
-                    G.PRISM.destroy_cards({target})
+                    SMODS.destroy_cards({target})
                     if left_card then
                         left_card.ability.perma_bonus = (left_card.ability.perma_bonus or 0) + chips
                         left_card:juice_up(0.3, 0.5)

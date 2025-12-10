@@ -138,48 +138,6 @@ G.PRISM.card_preview = function(cardArea, desc_nodes, config)
     return uiEX
 end
 
-function G.PRISM.destroy_cards(cards)
-    G.E_MANAGER:add_event(Event({
-        func = function()
-
---[[         if #cards > 0 and type(effects) == 'table' then
-            effects.sound = 'tarot1'
-            effects.instant = true
-            SMODS.calculate_effect(effects, card)
-        end ]]
-
-        -- Destroy every card
-        for _, v in ipairs(cards) do
-            if SMODS.shatters(v) then
-            v:shatter()
-            else
-            v:start_dissolve()
-            end
-        end
-
-        G.E_MANAGER:add_event(Event {
-            func = function()
-            SMODS.calculate_context({
-                remove_playing_cards = true,
-                removed = cards
-            })
-            return true
-            end
-        })
-
-        return true
-        end
-    }))
-
-    for _, v in ipairs(cards) do
-        if SMODS.shatters(v) then
-            v.shattered = true
-        else
-            v.destroyed = true
-        end
-    end
-end
-
 function G.PRISM.is_numbered(card)
     return card.base and card.base.value and not SMODS.Ranks[card.base.value].face and card:get_id() ~= 14
 end
