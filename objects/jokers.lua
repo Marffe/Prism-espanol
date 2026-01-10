@@ -1841,7 +1841,7 @@ G.PRISM.Joker({
 	blueprint_compat = true,
 	eternal_compat = true,
 	perishable_compat = true,
-	config = {extra = {index = 1,x_mult = 3.14}},
+	config = {extra = {index = 1,x_mult = 3.14,queued=false}},
 	loc_vars = function(self, info_queue, center)
 		local rank = string.sub(G.PRISM.PI,center.ability.extra.index,center.ability.extra.index)
 		if rank == "1" then rank = "Ace" end
@@ -1852,13 +1852,17 @@ G.PRISM.Joker({
 	end,
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
+			if card.ability.extra.queued and not context.blueprint then
+				card.ability.extra.index = card.ability.extra.index + 1
+				if card.ability.extra.index > G.PRISM.PI:len() then card.ability.extra.index = 1 end
+				card.ability.extra.queued = false
+			end
 			local rank = string.sub(G.PRISM.PI,card.ability.extra.index,card.ability.extra.index)
-			if rank == "1" then rank = "Ace" end
+			if rank == "1" then rank = "14" end
 			if rank == "0" then rank = "10" end
-			if context.other_card.config.card.value == rank then
+			if tostring(context.other_card:get_id()) == rank then
 				if not context.blueprint then
-					card.ability.extra.index = card.ability.extra.index + 1
-					if card.ability.extra.index > G.PRISM.PI:len() then card.ability.extra.index = 1 end
+					card.ability.extra.queued = true
 				end
 				return {
 					xmult = card.ability.extra.x_mult,
@@ -1866,6 +1870,13 @@ G.PRISM.Joker({
 				}
 			end
         end
+		if context.after then
+			if card.ability.extra.queued and not context.blueprint then
+				card.ability.extra.index = card.ability.extra.index + 1
+				if card.ability.extra.index > G.PRISM.PI:len() then card.ability.extra.index = 1 end
+				card.ability.extra.queued = false
+			end
+		end
     end
 	
 })
