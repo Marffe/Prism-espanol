@@ -259,7 +259,36 @@ G.PRISM.Consumable({
     discovered = false,
     config = {max_highlighted = 1},
     loc_vars = function(self, info_queue)
-		return { vars = {self.config.max_highlighted} }
+        local enhancements = {}
+        for _,v in ipairs(G.playing_cards) do
+            if v.config.center.key ~= "c_base" then
+            enhancements[v.config.center.key] = (enhancements[v.config.center.key] or 0) + 1
+            end
+        end
+        local pollable_enhance = {}
+        local enhanc_count = 0
+        for k,v in pairs(enhancements) do
+            if v > enhanc_count then
+                enhanc_count = v
+                pollable_enhance = {}
+                table.insert(pollable_enhance,k)
+            elseif v == enhanc_count then
+                table.insert(pollable_enhance,k)
+            end
+        end
+        local enhancement = #pollable_enhance == 1 and pollable_enhance[1]
+        local enha = enhancement and localize{type = 'name_text', key = enhancement, set = 'Enhanced'} or #pollable_enhance > 1 and localize('k_tied') or localize('k_none')
+		local colour = #pollable_enhance > 1 and G.C.FILTER or not enhancement and G.C.RED or G.C.GREEN
+        return { 
+            vars = {self.config.max_highlighted},
+            main_end = {
+                {n=G.UIT.C, config={align = "bm", padding = 0.02}, nodes={
+                    {n=G.UIT.C, config={align = "m", colour = colour, r = 0.05, padding = 0.05}, nodes={
+                        {n=G.UIT.T, config={text = ' '..enha..' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.3, shadow = true}},
+                    }}
+                }}
+            }
+        }
 	end,
     can_use = function(self, card)
 		return #G.hand.highlighted <= self.config.max_highlighted and #G.hand.highlighted >= 1

@@ -837,7 +837,6 @@ return {
                     "played and scoring"
                 },
             },
-
             prism_platinum_sticker={
                 name="Platinum Sticker",
                 text={
@@ -926,6 +925,7 @@ return {
             k_inactive_ex = "Inactive!",
             k_another_card = "another card",
             k_of = "of",
+            k_tied = "Tied",
             k_sunset = "Sunset",
             k_sunrise = "Sunrise",
             k_blahaj = "Tag :3",
