@@ -111,8 +111,8 @@ return {
             j_prism_sculptor  = {
                 name = "Sculpteur",
                 text = {"Chaque {C:attention}Carte Pierre{} jouée",
-                    "octroient {C:attention}définitivement{} {C:mult}+#1#{} Multi.",
-                    "lorsqu'elles marquent des points"
+                    "octroie {C:attention}définitivement{} {C:mult}+#1#{} Multi.",
+                    "lorsqu'elle marque des points"
                 },
             },
             j_prism_motherboard = {
