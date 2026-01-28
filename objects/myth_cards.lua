@@ -291,6 +291,7 @@ G.PRISM.Consumable({
                 }
             }
         end
+        return { vars = { self.config.max_highlighted } }
 	end,
     can_use = function(self, card)
 		return #G.hand.highlighted <= self.config.max_highlighted and #G.hand.highlighted >= 1
