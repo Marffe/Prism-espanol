@@ -105,16 +105,16 @@ G.PRISM.Joker({
 			SMODS.scale_card(card, {
 				ref_value = 'chips',
 				scalar_value = 'chips_gain',
-				operation = function(ref_table, ref_value, initial, change)
-					ref_table[ref_value] = initial + change*mod
+				operation = function(ref_table, ref_value, initial, modifier)
+					ref_table[ref_value] = initial + modifier*mod
 				end,
 				no_message = true,
 			})
 			SMODS.scale_card(card, {
 				ref_value = 'mult',
 				scalar_value = 'mult_gain',
-				operation = function(ref_table, ref_value, initial, change)
-					ref_table[ref_value] = initial + change*mod
+				operation = function(ref_table, ref_value, initial, modifier)
+					ref_table[ref_value] = initial + modifier*mod
 				end,
 				no_message = true,
 			})
@@ -228,7 +228,12 @@ G.PRISM.Joker({
 		end
 		if context.cardarea == G.play and context.individual and not context.blueprint then
 			if context.other_card.ability.set ~= 'Enhanced' and not context.other_card.seal and not context.other_card.edition then
-				card.ability.chips = card.ability.chips + card.ability.extra
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'chips',
+					scalar_value = 'extra',
+					no_message = true,
+				})
 				return {
 					focus = card,
 					colour = G.C.CHIPS,
@@ -236,7 +241,15 @@ G.PRISM.Joker({
 					card = card,
 				}
 			else
-				card.ability.chips = math.max(card.ability.chips - card.ability.extra,0)
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'chips',
+					scalar_value = 'extra',
+					operation = function(ref_table, ref_value, initial, modifier)
+						ref_table[ref_value] = math.max(initial - modifier, 0)
+					end,
+					no_message = true,
+				})
 				return {
 					focus = card,
 					colour = G.C.CHIPS,
@@ -761,7 +774,12 @@ G.PRISM.Joker({
 					}
 				end
 			else
-				card.ability.mult = card.ability.mult + card.ability.extra
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'mult',
+					scalar_value = 'extra',
+					no_message = true
+				})
 			end
         end
     end
@@ -788,32 +806,42 @@ G.PRISM.Joker({
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_steel
 	end,
 	attributes = {'enhancements'},
-	add_to_deck = function(self, card, from_debuff)
-        for _, deck_card in pairs(G.playing_cards or {}) do
-            if SMODS.has_enhancement(deck_card,"m_stone") then
-                deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
-            end
-        end
-        G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
-    end,
-    remove_from_deck = function(self, card, from_debuff)
-        for _, deck_card in pairs(G.playing_cards or {}) do
-            if SMODS.has_enhancement(deck_card,"m_stone") then
-                deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
-            end
-        end
-        G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
-    end
+	-- add_to_deck = function(self, card, from_debuff)
+    --     for _, deck_card in pairs(G.playing_cards or {}) do
+    --         if SMODS.has_enhancement(deck_card,"m_stone") then
+    --             deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
+    --         end
+    --     end
+    --     G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
+    -- end,
+    -- remove_from_deck = function(self, card, from_debuff)
+    --     for _, deck_card in pairs(G.playing_cards or {}) do
+    --         if SMODS.has_enhancement(deck_card,"m_stone") then
+    --             deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
+    --         end
+    --     end
+    --     G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
+    -- end
+	calculate = function(self, card, context)
+		if context.check_enhancement and not PRISM_METALHEAD_CHECK then
+			PRISM_METALHEAD_CHECK = true
+			local is_stone = SMODS.has_enhancement(context.other_card, "m_stone")
+			PRISM_METALHEAD_CHECK = nil
+			if is_stone then
+				return {m_steel = true}
+			end
+		end
+	end,
 })
 
-local orig_get_enhancements = SMODS.get_enhancements
-function SMODS.get_enhancements(card, extra_only)
-	local enhancements = orig_get_enhancements(card,extra_only)
-	if next(find_joker("j_prism_metalhead")) and card.config.center == G.P_CENTERS.m_stone then
-		enhancements["m_steel"] = true
-	end
-	return enhancements
-end
+-- local orig_get_enhancements = SMODS.get_enhancements
+-- function SMODS.get_enhancements(card, extra_only)
+-- 	local enhancements = orig_get_enhancements(card,extra_only)
+-- 	if next(find_joker("j_prism_metalhead")) and card.config.center == G.P_CENTERS.m_stone then
+-- 		enhancements["m_steel"] = true
+-- 	end
+-- 	return enhancements
+-- end
 G.PRISM.Joker({
 	key = "exotic_card",
 	atlas = "jokers",
@@ -1232,15 +1260,19 @@ G.PRISM.Joker({
 			}
 		end
 		if context.setting_blind and not context.blueprint then
-			local x_mult_gain = card.ability.extra.gain*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)
+			local mod = math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)
 			ease_dollars(-G.GAME.dollars, true)
-			if to_big(x_mult_gain) > to_big(0) then 
-				card.ability.extra.x_mult = card.ability.extra.x_mult + to_number(to_big(x_mult_gain))
-				return {
-					focus = card,
-					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.x_mult } }),
-					card = card,
-				}
+			if to_big(mod) > to_big(0) then 
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = 'x_mult',
+					scalar_value = 'gain',
+					operation = function(ref_table, ref_value, initial, modifier)
+						ref_table[ref_value] = initial + modifier*mod
+					end,
+					message_key = 'a_xmult'
+				})
+				return nil, true
 			end
 		end
 	end
@@ -1421,8 +1453,13 @@ G.PRISM.Joker({
 		end
         if context.cardarea == G.play and context.individual and not context.blueprint then
 			if context.other_card:get_id() == card.ability.rank then
-				card.ability.mult = card.ability.mult + card.ability.extra
 				card.ability.rank = card.ability.rank == 14 and 2 or math.min(card.ability.rank + 1, 14)
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'mult',
+					scalar_value = 'extra',
+					no_message = true
+				})
 				return {
 					focus = card,
 					colour = G.C.RED,
@@ -1618,7 +1655,12 @@ G.PRISM.Joker({
 		end
 		if context.end_of_round and context.individual and context.cardarea == G.hand and not context.blueprint then
 			if SMODS.has_enhancement(context.other_card,'m_prism_crystal') then
-				card.ability.x_mult = card.ability.x_mult + card.ability.extra
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'x_mult',
+					scalar_value = 'extra',
+					no_message = true
+				})
 				return {
 					focus = card,
 					colour = G.C.RED,
@@ -1848,6 +1890,7 @@ function SMODS.poll_rarity(_pool_key, _rand_key)
 	end
 	return nil
 end
+-- TODO: poll_object maybe?
 G.PRISM.Joker({
 	dependency = G.PRISM.config.myth_enabled,
 	key = "romantic",
@@ -2246,7 +2289,12 @@ G.PRISM.Joker({
 			for k,v in pairs(suits) do
 				if not card.ability.extra.suits[k] and v > 0 then
 					card.ability.extra.suits[k] = true
-					card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.bonus
+					SMODS.scale_card(card, {
+						ref_table = card.ability.extra,
+						ref_value = 'x_mult',
+						scalar_value = 'bonus',
+						no_message = true
+					})
 					upgrade = true
 				end
 			end
@@ -2285,12 +2333,16 @@ G.PRISM.Joker({
 	end,
 	calculate = function(self, card, context)
 		if (context.cardarea == G.jokers and context.before) or context.discard and context.other_card == context.full_hand[1] and not context.blueprint  then
-			card.ability.hand_size = card.ability.hand_size + card.ability.extra
-			G.hand:change_size(card.ability.extra)
-			return {
-				message = localize('k_upgrade_ex'),
-				card = card,
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability,
+				ref_value = 'hand_size',
+				scalar_value = 'extra',
+				operation = function(ref_table, ref_value, initial, modifier)
+					ref_table[ref_value] = initial + modifier
+					G.hand:change_size(modifier)
+				end,
+			})
+			return nil, true
 		end
 		if context.cardarea == G.jokers and context.end_of_round and not context.blueprint  then
 			G.hand:change_size(-card.ability.hand_size)
