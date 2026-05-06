@@ -1175,7 +1175,6 @@ G.PRISM.Joker({
         end
     end,
 })
--- TODO: see if i can make this not crash
 
 G.PRISM.Joker({
 	key = "cookie",
@@ -1223,19 +1222,10 @@ G.PRISM.Joker({
 		if context.selling_self and not context.blueprint then
 			if G.STATE == G.STATES.SELECTING_HAND then
 				G.GAME.prism_fortune_cookie = true
-				for k, v in pairs(G.GAME.probabilities) do
-					G.GAME.probabilities[k] = v * 9999
-				end
 			end
 		end
     end
 })
---[[ local orig_pseudorandom_probability = SMODS.pseudorandom_probability
-function SMODS.pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
-	if G.GAME.prism_fortune_cookie then return true end
-	return orig_pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
-end ]]
--- TODO: make this use mod_probability context
 
 G.PRISM.Joker({
 	key = "economics",
@@ -1890,7 +1880,6 @@ function SMODS.poll_rarity(_pool_key, _rand_key)
 	end
 	return nil
 end
--- TODO: poll_object maybe?
 G.PRISM.Joker({
 	dependency = G.PRISM.config.myth_enabled,
 	key = "romantic",

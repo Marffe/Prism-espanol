@@ -71,16 +71,16 @@ function SMODS.current_mod.reset_game_globals(run_start)
     else
 	end
 	G.GAME.prism_shop_legend = false
-	if G.GAME.prism_fortune_cookie then
-		G.GAME.prism_fortune_cookie = false
-		for k, v in pairs(G.GAME.probabilities) do
-			G.GAME.probabilities[k] = v / 9999
-		end
-	end
+	G.GAME.prism_fortune_cookie = false
 	G.GAME.prism_cards_played = 0
 	G.GAME.prism_extra_draw = 0
 	for k,v in pairs(G.playing_cards or {}) do
 		if v.ability.greened then v.ability.greened = nil end
+	end
+end
+function SMODS.current_mod.calculate(self, context)
+	if context.fix_probability and G.GAME and G.GAME.prism_fortune_cookie then
+		return {numerator = context.denominator}
 	end
 end
 
