@@ -11,6 +11,13 @@ SMODS.Atlas {
     py = 95
 }
 
+SMODS.Attribute {
+	key = 'myth'
+}
+SMODS.Attribute {
+	key = 'emult'
+}
+
 function G.PRISM.Joker(table)
 	if table.dependency or table.dependency == nil then
 		SMODS.Joker(table)
@@ -28,6 +35,7 @@ G.PRISM.Joker({
 	blueprint_compat = false,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'passive','hand_type'},
 	add_to_deck = function(self, card, from_debuff)
 		SMODS.change_play_limit(1)
 		SMODS.change_discard_limit(1)
@@ -59,6 +67,7 @@ G.PRISM.Joker({
 			center.ability.money }
 		}
 	end,
+	attributes = {'economy','chance','on_sell'},
 	calculate = function(self, card, context)
 		if context.selling_card and context.card ~= card and SMODS.pseudorandom_probability(card,"rich",1,card.ability.odds) then
 			return {
@@ -83,6 +92,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra.chips_gain, center.ability.extra.mult_gain, center.ability.extra.chips, center.ability.extra.mult} }
 	end,
+	attributes = {'chips','mult','scaling','hands'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			return{
@@ -92,8 +102,22 @@ G.PRISM.Joker({
 		end
 		if context.cardarea == G.jokers and context.end_of_round and not context.blueprint then
 			local mod = G.GAME.current_round.hands_left
-			card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chips_gain * mod
-			card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain * mod
+			SMODS.scale_card(card, {
+				ref_value = 'chips',
+				scalar_value = 'chips_gain',
+				operation = function(ref_table, ref_value, initial, modifier)
+					ref_table[ref_value] = initial + modifier*mod
+				end,
+				no_message = true,
+			})
+			SMODS.scale_card(card, {
+				ref_value = 'mult',
+				scalar_value = 'mult_gain',
+				operation = function(ref_table, ref_value, initial, modifier)
+					ref_table[ref_value] = initial + modifier*mod
+				end,
+				no_message = true,
+			})
 			return {
 				message = localize('k_upgrade_ex'),
 				colour = G.C.FILTER,
@@ -113,6 +137,7 @@ G.PRISM.Joker({
 	blueprint_compat = false,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'passive'},
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.individual then
 			context.other_card.config.cycling = true
@@ -154,6 +179,7 @@ G.PRISM.Joker({
 			center.ability.extra.mult * to_left
 		} }
 	end,
+	attributes = {'chips','mult','joker'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			local to_right = 0
@@ -193,6 +219,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra, center.ability.chips} }
 	end,
+	attributes = {'chips','scaling'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			return{
@@ -201,7 +228,12 @@ G.PRISM.Joker({
 		end
 		if context.cardarea == G.play and context.individual and not context.blueprint then
 			if context.other_card.ability.set ~= 'Enhanced' and not context.other_card.seal and not context.other_card.edition then
-				card.ability.chips = card.ability.chips + card.ability.extra
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'chips',
+					scalar_value = 'extra',
+					no_message = true,
+				})
 				return {
 					focus = card,
 					colour = G.C.CHIPS,
@@ -209,7 +241,15 @@ G.PRISM.Joker({
 					card = card,
 				}
 			else
-				card.ability.chips = math.max(card.ability.chips - card.ability.extra,0)
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'chips',
+					scalar_value = 'extra',
+					operation = function(ref_table, ref_value, initial, modifier)
+						ref_table[ref_value] = math.max(initial - modifier, 0)
+					end,
+					no_message = true,
+				})
 				return {
 					focus = card,
 					colour = G.C.CHIPS,
@@ -235,6 +275,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.chips, G.GAME.consumeable_usage_total and G.GAME.consumeable_usage_total.spectral * center.ability.extra.chips or 0} }
 	end,
+	attributes = {'chips','scaling','spectral'},
 	calculate = function(self, card, context)
 		if context.joker_main and G.GAME.consumeable_usage_total and G.GAME.consumeable_usage_total.spectral > 0 then
 			return {
@@ -264,6 +305,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.chips,center.ability.extra.uses}}
 	end,
+	attributes = {'chips','suit','spades','food'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
             if context.other_card:is_suit('Spades', nil, true) and card.ability.extra.uses > 0 then
@@ -306,6 +348,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.x_mult,center.ability.extra.uses}}
 	end,
+	attributes = {'xmult','suit','hearts','food'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
             if context.other_card:is_suit('Hearts', nil, true) and card.ability.extra.uses > 0 then
@@ -349,6 +392,7 @@ G.PRISM.Joker({
 		local n, d = SMODS.get_probability_vars(center,1,center.ability.extra.odds,"4cheese")
 		return { vars = { center.ability.extra.money,center.ability.extra.uses,n,d}}
 	end,
+	attributes = {'economy','suit','diamonds','chance','food'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
             if context.other_card:is_suit('Diamonds', nil, true) and card.ability.extra.uses > 0 then
@@ -393,6 +437,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.mult,center.ability.extra.uses}}
 	end,
+	attributes = {'mult','suit','clubs','food'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
             if context.other_card:is_suit('Clubs', nil, true) and card.ability.extra.uses > 0 then
@@ -440,6 +485,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.min_money,center.ability.extra.max_money,center.ability.extra.uses}}
 	end,
+	attributes = {'economy','suit','crowns','food'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
             if context.other_card:is_suit('paperback_Crowns', nil, true) and card.ability.extra.uses > 0 then
@@ -489,6 +535,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.x_chips,center.ability.extra.uses}}
 	end,
+	attributes = {'xchips','suit','stars','food'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
             if context.other_card:is_suit('paperback_Stars', nil, true) and card.ability.extra.uses > 0 then
@@ -534,6 +581,7 @@ G.PRISM.Joker({
 		return { vars = { center.ability.extra.x_mult,center.ability.extra.uses,
 		n,d}}
 	end,
+	attributes = {'xmult','suit','3s','chance','food'},
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.individual then
 			if context.other_card:is_3() and card.ability.extra.uses > 0 then
@@ -603,6 +651,7 @@ G.PRISM.Joker({
 		end
 		return false
 	end,
+	attributes = {'mult','perma_bonus','modify_card','enhancements'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
 			if SMODS.has_enhancement(context.other_card,'m_stone') then
@@ -630,6 +679,7 @@ G.PRISM.Joker({
 	blueprint_compat = true,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'generation','myth','rank','king','queen'},
 	calculate = function(self, card, context)
 		if context.joker_main and not context.before and not context.after and not (context.blueprint_card or card).getting_sliced then
 			local kings = 0
@@ -666,6 +716,7 @@ G.PRISM.Joker({
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_stone
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_prism_crystal
 	end,
+	attributes = {'enhancements','modify_card'},
 	calculate = function(self, card, context)
 		if context.first_hand_drawn then
 			G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
@@ -702,6 +753,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.mult,center.ability.extra} }
 	end,
+	attributes = {'mult','scaling','reset','hand_type'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			return {
@@ -722,7 +774,12 @@ G.PRISM.Joker({
 					}
 				end
 			else
-				card.ability.mult = card.ability.mult + card.ability.extra
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'mult',
+					scalar_value = 'extra',
+					no_message = true
+				})
 			end
         end
     end
@@ -748,32 +805,43 @@ G.PRISM.Joker({
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_stone
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_steel
 	end,
-	add_to_deck = function(self, card, from_debuff)
-        for _, deck_card in pairs(G.playing_cards or {}) do
-            if SMODS.has_enhancement(deck_card,"m_stone") then
-                deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
-            end
-        end
-        G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
-    end,
-    remove_from_deck = function(self, card, from_debuff)
-        for _, deck_card in pairs(G.playing_cards or {}) do
-            if SMODS.has_enhancement(deck_card,"m_stone") then
-                deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
-            end
-        end
-        G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
-    end
+	attributes = {'enhancements'},
+	-- add_to_deck = function(self, card, from_debuff)
+    --     for _, deck_card in pairs(G.playing_cards or {}) do
+    --         if SMODS.has_enhancement(deck_card,"m_stone") then
+    --             deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
+    --         end
+    --     end
+    --     G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or 0) + G.P_CENTERS.m_steel.config.h_x_mult
+    -- end,
+    -- remove_from_deck = function(self, card, from_debuff)
+    --     for _, deck_card in pairs(G.playing_cards or {}) do
+    --         if SMODS.has_enhancement(deck_card,"m_stone") then
+    --             deck_card.ability.h_x_mult = (deck_card.ability.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
+    --         end
+    --     end
+    --     G.P_CENTERS.m_stone.config.h_x_mult = (G.P_CENTERS.m_stone.config.h_x_mult or G.P_CENTERS.m_steel.config.h_x_mult) - G.P_CENTERS.m_steel.config.h_x_mult
+    -- end
+	calculate = function(self, card, context)
+		if context.check_enhancement and not PRISM_METALHEAD_CHECK then
+			PRISM_METALHEAD_CHECK = true
+			local is_stone = SMODS.has_enhancement(context.other_card, "m_stone")
+			PRISM_METALHEAD_CHECK = nil
+			if is_stone then
+				return {m_steel = true}
+			end
+		end
+	end,
 })
 
-local orig_get_enhancements = SMODS.get_enhancements
-function SMODS.get_enhancements(card, extra_only)
-	local enhancements = orig_get_enhancements(card,extra_only)
-	if next(find_joker("j_prism_metalhead")) and card.config.center == G.P_CENTERS.m_stone then
-		enhancements["m_steel"] = true
-	end
-	return enhancements
-end
+-- local orig_get_enhancements = SMODS.get_enhancements
+-- function SMODS.get_enhancements(card, extra_only)
+-- 	local enhancements = orig_get_enhancements(card,extra_only)
+-- 	if next(find_joker("j_prism_metalhead")) and card.config.center == G.P_CENTERS.m_stone then
+-- 		enhancements["m_steel"] = true
+-- 	end
+-- 	return enhancements
+-- end
 G.PRISM.Joker({
 	key = "exotic_card",
 	atlas = "jokers",
@@ -790,6 +858,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra} }
 	end,
+	attributes = {'retrigger','enhancements'},
 	calculate = function(self, card, context)
         if context.repetition and context.cardarea == G.play then
 			if next(SMODS.get_enhancements(context.other_card)) then
@@ -819,6 +888,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		if not center.fake_card then info_queue[#info_queue + 1] = G.P_CENTERS.j_prism_night end
 	end,
+	attributes = {'retrigger','suit','hearts','diamonds'},
 	calculate = function(self, card, context)
 		if context.before then
 			local right_suits, all_cards = 0, 0
@@ -876,6 +946,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		if not center.fake_card then info_queue[#info_queue + 1] = G.P_CENTERS.j_prism_day end
 	end,
+	attributes = {'retrigger','suit','spades','clubs'},
 	calculate = function(self, card, context)
 		if context.before then
 			local right_suits, all_cards = 0, 0
@@ -933,6 +1004,7 @@ G.PRISM.Joker({
 		info_queue[#info_queue+1] = {key = 'tag_double', set = 'Tag'}
 		return { vars = {center.ability.required,center.ability.current} }
 	end,
+	attributes = {'generation','tag','rank','jack'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual and not context.blueprint then
             if context.other_card:get_id() == 11 then
@@ -980,6 +1052,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra} }
 	end,
+	attributes = {'retrigger'},
 	calculate = function(self, card, context)
 		if context.cardarea == G.jokers and context.before then
 			if #context.full_hand == 1 then card.ability.trigger = true else card.ability.trigger = false end
@@ -1008,6 +1081,7 @@ G.PRISM.Joker({
 	config = {extra = {cards = {}}},
 	loc_vars = function(self, info_queue, center)
 	end,
+	attributes = {'generation'},
 	calculate = function(self, card, context)
 		if context.cardarea == G.jokers and context.before and not context.blueprint then
 			card.ability.extra.cards = {}
@@ -1143,22 +1217,15 @@ G.PRISM.Joker({
 			}}
 		}
 	end,
+	attributes = {'on_sell','mod_chance'},
 	calculate = function(self, card, context)
 		if context.selling_self and not context.blueprint then
 			if G.STATE == G.STATES.SELECTING_HAND then
 				G.GAME.prism_fortune_cookie = true
-				for k, v in pairs(G.GAME.probabilities) do
-					G.GAME.probabilities[k] = v * 9999
-				end
 			end
 		end
     end
 })
---[[ local orig_pseudorandom_probability = SMODS.pseudorandom_probability
-function SMODS.pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
-	if G.GAME.prism_fortune_cookie then return true end
-	return orig_pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier, no_mod)
-end ]]
 
 G.PRISM.Joker({
 	key = "economics",
@@ -1175,6 +1242,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra.gain,center.ability.extra.dollars,center.ability.extra.x_mult} }
 	end,
+	attributes = {'xmult','scaling','economy'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			return {
@@ -1182,15 +1250,19 @@ G.PRISM.Joker({
 			}
 		end
 		if context.setting_blind and not context.blueprint then
-			local x_mult_gain = card.ability.extra.gain*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)
+			local mod = math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)
 			ease_dollars(-G.GAME.dollars, true)
-			if to_big(x_mult_gain) > to_big(0) then 
-				card.ability.extra.x_mult = card.ability.extra.x_mult + to_number(to_big(x_mult_gain))
-				return {
-					focus = card,
-					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.x_mult } }),
-					card = card,
-				}
+			if to_big(mod) > to_big(0) then 
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = 'x_mult',
+					scalar_value = 'gain',
+					operation = function(ref_table, ref_value, initial, modifier)
+						ref_table[ref_value] = initial + modifier*mod
+					end,
+					message_key = 'a_xmult'
+				})
+				return nil, true
 			end
 		end
 	end
@@ -1209,6 +1281,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		info_queue[#info_queue+1] = {key = 'tag_negative', set = 'Tag'}
 	end,
+	attributes = {'generation','tag','rank','six'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			local sixes = 0
@@ -1277,6 +1350,7 @@ G.PRISM.Joker({
 			}}
 		}
 	end,
+	attributes = {'xmult','myth'},
 	calculate = function(self, card, context)
         if context.using_consumeable and context.consumeable.ability.set  == 'Myth' and not context.blueprint and card.ability.extra.active == false then
             card.ability.extra.active = true
@@ -1319,6 +1393,7 @@ G.PRISM.Joker({
 		vars = {center.ability.extra.x_mult}
 		}
 	end,
+	attributes = {'xmult','enhancements'},
 	in_pool = function(self)
 		for k, v in pairs(G.playing_cards or {}) do
 			if SMODS.has_enhancement(v,'m_wild') then return true end
@@ -1359,6 +1434,7 @@ G.PRISM.Joker({
 		end
 		return { vars = {center.ability.extra,center.ability.mult,localize(rank, 'ranks')} }
 	end,
+	attributes = {'mult','scaling','rank'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			return {
@@ -1367,8 +1443,13 @@ G.PRISM.Joker({
 		end
         if context.cardarea == G.play and context.individual and not context.blueprint then
 			if context.other_card:get_id() == card.ability.rank then
-				card.ability.mult = card.ability.mult + card.ability.extra
 				card.ability.rank = card.ability.rank == 14 and 2 or math.min(card.ability.rank + 1, 14)
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'mult',
+					scalar_value = 'extra',
+					no_message = true
+				})
 				return {
 					focus = card,
 					colour = G.C.RED,
@@ -1394,6 +1475,7 @@ G.PRISM.Joker({
 		info_queue[#info_queue+1] = {key = 'tag_uncommon', set = 'Tag'}
 		info_queue[#info_queue+1] = {key = 'tag_rare', set = 'Tag'}
 	end,
+	attributes = {'generation','tag','joker','hand_type','rank','ace'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			local aces = 0
@@ -1450,6 +1532,7 @@ G.PRISM.Joker({
 		local n, d = SMODS.get_probability_vars(center,1,center.ability.extra.odds,"murano")
 		return { vars = {n,d}}
 	end,
+	attributes = {'enhancements','editions','modify_card','chance'},
 	in_pool = function(self)
 		for k, v in pairs(G.playing_cards or {}) do
 			if SMODS.has_enhancement(v,'m_glass') then return true end
@@ -1503,6 +1586,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_stone
 	end,
+	attributes = {'face','enhancements'},
 	calculate = function(self, card, context)
         if context.cardarea == G.jokers and context.before and not context.blueprint then
 			local has_face = false
@@ -1546,6 +1630,7 @@ G.PRISM.Joker({
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_prism_crystal
 		return {vars = {center.ability.x_mult,center.ability.extra}}
 	end,
+	attributes = {'xmult','scaling','enhancements'},
 	in_pool = function(self)
 		for k, v in pairs(G.playing_cards or {}) do
 			if SMODS.has_enhancement(v,'m_prism_crystal') then return true end
@@ -1560,7 +1645,12 @@ G.PRISM.Joker({
 		end
 		if context.end_of_round and context.individual and context.cardarea == G.hand and not context.blueprint then
 			if SMODS.has_enhancement(context.other_card,'m_prism_crystal') then
-				card.ability.x_mult = card.ability.x_mult + card.ability.extra
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = 'x_mult',
+					scalar_value = 'extra',
+					no_message = true
+				})
 				return {
 					focus = card,
 					colour = G.C.RED,
@@ -1584,6 +1674,7 @@ G.PRISM.Joker({
 	blueprint_compat = true,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'generation','myth'},
 	calculate = function(self, card, context)
 		if context.setting_blind and not context.blind.boss and not (context.blueprint_card or card).getting_sliced then
 			G.PRISM.create_card('Myth',G.consumeables, nil, nil, nil, nil, nil, 'minst', function(new_card)
@@ -1610,6 +1701,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return {vars = {center.ability.extra.levels}}
 	end,
+	attributes = {'hand_type','planet','boss_blind'},
 	calculate = function(self, card, context)
 		if context.using_consumeable and context.consumeable.ability.set == 'Planet' and not card.ability.extra.planets[context.consumeable.config.center_key] then
 			card.ability.extra.planets[context.consumeable.config.center_key] = true
@@ -1689,6 +1781,7 @@ G.PRISM.Joker({
 	blueprint_compat = false,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'hands','rank','queen','modify_card'},
 	calculate = function(self, card, context)
 		if context.first_hand_drawn and not context.blueprint then
 			local eval = function() return G.GAME.current_round.hands_played == 0 end
@@ -1724,6 +1817,7 @@ G.PRISM.Joker({
 	blueprint_compat = true,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'swap'},
 	calculate = function(self, card, context)
 		if context.joker_main and not context.before and not context.after and hand_chips and mult then
 			return {
@@ -1745,7 +1839,7 @@ G.PRISM.Joker({
 	blueprint_compat = false,
 	eternal_compat = true,
 	perishable_compat = true,
-	
+	attributes = {'passive','joker'},
 })
 local orig_poll_rarity = SMODS.poll_rarity
 function SMODS.poll_rarity(_pool_key, _rand_key)
@@ -1812,6 +1906,7 @@ G.PRISM.Joker({
             }
 		}
 	end,
+	attributes = {'generation','myth','suit','hearts','spades'},
 	calculate = function(self, card, context)
 		if context.joker_main and not context.before and not context.after and not (context.blueprint_card or card).getting_sliced and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
 			local hearts = 0
@@ -1850,6 +1945,7 @@ G.PRISM.Joker({
 		center.ability.extra.x_mult,
 		string.sub(G.PRISM.PI,center.ability.extra.index + 1,center.ability.extra.index + 5)}}
 	end,
+	attributes = {'xmult','rank'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
 			if card.ability.extra.queued and not context.blueprint then
@@ -1895,6 +1991,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return {vars = {localize(center.ability.poker_hand_1, 'poker_hands'),localize(center.ability.poker_hand_2, 'poker_hands')}}
 	end,
+	attributes = {'balance','hand_type'},
 	set_ability = function(self, card, initial,delay_sprites)
 		card.ability.reset = false
 		local _poker_hands = {}
@@ -1961,6 +2058,7 @@ G.PRISM.Joker({
 		end
 		return {vars = {center.ability.extra, x_mult}}
 	end,
+	attributes = {'xmult','rank','full_deck'},
 	calculate = function(self, card, context)
 		if context.joker_main then
 			local x_mult = 1
@@ -1994,6 +2092,7 @@ G.PRISM.Joker({
 		local edition = G.PRISM.compat.darkside and "e_pridark_trans" or "e_polychrome"
 		info_queue[#info_queue + 1] = G.P_CENTERS[edition]
 	end,
+	attributes = {'passive','editions'},
 })
 
 local orig_set_edition = Card.set_edition
@@ -2026,6 +2125,7 @@ G.PRISM.Joker({
 		vars = {center.ability.extra.chips,center.ability.extra.mult,center.ability.extra.x_mult,n,d}
 		}
 	end,
+	attributes = {'chips','mult','xmult','perma_bonus','modify_card','chance'},
 	calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual then
 			if SMODS.pseudorandom_probability(card,"swiss",1,card.ability.extra.odds) then
@@ -2069,6 +2169,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra} }
 	end,
+	attributes = {'generation','spectral','hand_size'},
 	calculate = function(self, card, context)
         if context.end_of_round and context.cardarea == G.jokers and G.GAME.blind.boss
 		and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
@@ -2106,6 +2207,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.e_mult} }
 	end,
+	attributes = {'emult','hand_type'},
 	calculate = function(self, card, context)
         if context.joker_main then
 			local hands = evaluate_poker_hand(G.hand.cards)
@@ -2130,6 +2232,7 @@ G.PRISM.Joker({
 	blueprint_compat = false,
 	eternal_compat = true,
 	perishable_compat = true,
+	attributes = {'passive','suit','rank','two','three','four','five','six','seven','eight','nine','ten'},
 })
 
 local orig_is_suit = Card.is_suit
@@ -2159,6 +2262,7 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra.bonus,center.ability.extra.x_mult} }
 	end,
+	attributes = {'xmult','scaling','suit'},
 	calculate = function(self, card, context)
 		if context.cardarea == G.jokers and context.before and not context.blueprint then
 			card.ability.extra.suits = {}
@@ -2174,7 +2278,12 @@ G.PRISM.Joker({
 			for k,v in pairs(suits) do
 				if not card.ability.extra.suits[k] and v > 0 then
 					card.ability.extra.suits[k] = true
-					card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.bonus
+					SMODS.scale_card(card, {
+						ref_table = card.ability.extra,
+						ref_value = 'x_mult',
+						scalar_value = 'bonus',
+						no_message = true
+					})
 					upgrade = true
 				end
 			end
@@ -2207,17 +2316,22 @@ G.PRISM.Joker({
 	loc_vars = function(self, info_queue, center)
 		return { vars = {center.ability.extra,center.ability.hand_size} }
 	end,
+	attributes = {'hand_size','scaling','discard'},
 	remove_from_deck = function(self, card, from_debuff)
 		G.hand:change_size(-card.ability.hand_size)
 	end,
 	calculate = function(self, card, context)
 		if (context.cardarea == G.jokers and context.before) or context.discard and context.other_card == context.full_hand[1] and not context.blueprint  then
-			card.ability.hand_size = card.ability.hand_size + card.ability.extra
-			G.hand:change_size(card.ability.extra)
-			return {
-				message = localize('k_upgrade_ex'),
-				card = card,
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability,
+				ref_value = 'hand_size',
+				scalar_value = 'extra',
+				operation = function(ref_table, ref_value, initial, modifier)
+					ref_table[ref_value] = initial + modifier
+					G.hand:change_size(modifier)
+				end,
+			})
+			return nil, true
 		end
 		if context.cardarea == G.jokers and context.end_of_round and not context.blueprint  then
 			G.hand:change_size(-card.ability.hand_size)
