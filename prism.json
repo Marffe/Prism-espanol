@@ -11,5 +11,7 @@
 	"badge_colour": "665775",
 	"badge_text_colour": "ffffff",
 	"version": "1.10.0",
+	"icon_path": "modicon.png",
+	"icon_width": 32,
 	"dependencies": ["Steamodded (>=1.0.0~BETA-1620a)"]
 }
