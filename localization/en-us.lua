@@ -391,7 +391,23 @@ return {
                     "{C:planet}Planet{} used this ante",
                     "{C:inactive}(Currently {C:attention}#1#{C:inactive} Planets played)"
                 },
-            }
+            },
+            j_prism_monkey_paw = {
+                name = "Monkey Paw",
+                text = {"After defeating {C:attention}Boss Blind{},",
+                    "wish for {C:dark_edition}any {C:spectral}Spectral{}",
+                    "card to create, but lose",
+                    "{C:red}-#1#{} hand size permanently",
+                    "{C:inactive}(Must have room)"
+                }
+            },
+            j_prism_scale = {
+                name = "Balance Scale",
+                text = {"{C:chips}+#1#{} Chips per Joker to the {C:attention}Right",
+                    "{C:red}+#2#{} Mult per Joker to the {C:attention}Left",
+                    "{C:inactive}(Currently {C:chips}+#3#{C:inactive} Chips and {C:red}+#4#{C:inactive} Mult)"
+                }
+            },
         },
         Back = {
             b_prism_purple = {
@@ -414,6 +430,12 @@ return {
                 text = {"Start run with",
                     "{C:attention,T:v_overstock_norm}Overstock{} and",
                     "{C:attention,T:v_reroll_surplus}Reroll Surplus{}"
+                },
+            },
+            b_prism_alchemy = {
+                name = "Alchemist's Deck",
+                text = {"Each {C:money}Shop{} has an",
+                    "{C:attention}extra {C:myth_light,T:c_prism_myth_opus}Magnum Opus{}",
                 },
             },
         },
@@ -455,6 +477,18 @@ return {
                 name = "Overproduction Sleeve",
                 text = {"Start run with",
                     "{C:attention,T:v_prism_booster_box}Booster Box{}"
+                },
+            },
+            sleeve_prism_alchemysleeve = {
+                name = "Alchemist's Sleeve",
+                text = {"Each {C:money}Shop{} has an",
+                    "{C:attention}extra {C:myth_light,T:c_prism_myth_opus}Magnum Opus{}",
+                },
+            },
+            sleeve_prism_alchemysleeve_alt = {
+                name = "Alchemist's Sleeve",
+                text = {"Start run with",
+                    "{C:tarot,T:v_crystal_ball}Crystal Ball{}"
                 },
             },
         },
@@ -605,6 +639,21 @@ return {
                 text = {"Converts up to {C:attention}#1#{}",
                     "selected cards to",
                     "the {C:attention}right{} card's {C:attention}Suit{}"
+                }
+            },
+            c_prism_myth_fae = {
+                name = "Faerie",
+                text = {"Earn {C:money}$#1#{} per level",
+                    "of highest level {C:attention}poker",
+                    "{C:attention}hand {C:inactive}(Max of {C:money}$#2#{C:inactive})",
+                    "{C:inactive}(Currently {C:money}$#3#{C:inactive})",
+                }
+            },
+            c_prism_myth_opus = {
+                name = "Magnum Opus",
+                text = {"Enhances {C:attention}#1#{} selected",
+                    "card to the {C:attention}most common",
+                    "{C:enhanced}Enhancement{} in full deck"
                 }
             },
             c_prism_myth_egg = {
@@ -788,7 +837,6 @@ return {
                     "played and scoring"
                 },
             },
-
             prism_platinum_sticker={
                 name="Platinum Sticker",
                 text={
@@ -846,7 +894,7 @@ return {
                     " ",
                     "{s:1.5,C:attention,E:2}Credits",
                     "{C:dark_edition,E:2}SuperMao{} and {C:dark_edition,E:2}VisJoker{} - Chinese localization",
-                    "{C:dark_edition,E:2}Franderman123{} - Spanish localization",
+                    "{C:dark_edition,E:2}Franderman123{} and {C:dark_edition,E:2}Marffe{} - Spanish localization",
                     "{C:dark_edition,E:2}Shinosan{} - Vietnamese localization",
                     "{C:dark_edition,E:2}Alexandria Thurnherr{}, {C:dark_edition,E:2}juno_r1{} and {C:dark_edition,E:2}others{} - French localization",
                     " ",
@@ -877,6 +925,7 @@ return {
             k_inactive_ex = "Inactive!",
             k_another_card = "another card",
             k_of = "of",
+            k_tied = "Tied",
             k_sunset = "Sunset",
             k_sunrise = "Sunrise",
             k_blahaj = "Tag :3",
@@ -887,11 +936,13 @@ return {
             prism_switch = "Switch",
             prism_jokers_enabled = "Enable Jokers",
             prism_myth_enabled = "Enable Myth Cards",
+            prism_enhance_enabled = "Enable Enhancements",
             prism_blinds_enabled = "Enable Boss Blinds",
             prism_legacy_green = "Use Old Green Seal",
+            prism_allow_neg_copy = "Allow copying negative cards",
             prism_feature_enable = "Select features:",
             prism_pizza_music = "Pizza Music",
-            prism_requires_restart = "Requires restart!",
+            prism_requires_restart = "The game will restart automatically if necessary",
             b_open_link = "Opens in browser",
         },
         v_dictionary = {

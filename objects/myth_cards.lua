@@ -14,7 +14,7 @@ SMODS.ConsumableType({
     key = "Myth",
     primary_colour = G.PRISM.C.myth_1,
     secondary_colour = G.PRISM.C.myth_2,
-    collection_rows = {4, 4},
+    collection_rows = {4, 5},
     shop_rate = 2,
     default = 'c_prism_myth_gnome'
 })
@@ -24,12 +24,18 @@ SMODS.UndiscoveredSprite({
     pos = { x = 0, y = 0 },
     no_overlay = true
 })
-
-SMODS.Consumable({
+function G.PRISM.Consumable(table)
+	if table.dependency or table.dependency == nil then
+		SMODS.Consumable(table)
+	end
+end
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_dwarf',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=1, y=0},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_crystal", max_highlighted = 2},
     effect = 'Enhance',
@@ -40,11 +46,13 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_dragon',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=2, y=0},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_burnt", max_highlighted = 2},
     effect = 'Enhance',
@@ -55,11 +63,13 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_siren',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=6, y=1},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_echo", max_highlighted = 2},
     effect = 'Enhance',
@@ -70,11 +80,13 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    dependency = G.PRISM.config.enhance_enabled,
     key = 'myth_yeti',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=8, y=1},
+    cost = 4,
     discovered = false,
     config = {mod_conv = "m_prism_ice", max_highlighted = 2},
     effect = 'Enhance',
@@ -85,11 +97,12 @@ SMODS.Consumable({
 	end,
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_egg',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=8, y=0},
+    cost = 4,
     discovered = false,
     config = {odds = 3,money = 15},
     loc_vars = function(self, info_queue)
@@ -143,11 +156,12 @@ SMODS.Consumable({
     end
 
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_mirror',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=4, y=0},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue + 1] = {key = 'e_negative_playing_card', set = 'Edition', config = {extra = 1}}
@@ -171,11 +185,12 @@ SMODS.Consumable({
     end
 
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_druid',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=0, y=1},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 2},
     loc_vars = function(self, info_queue)
@@ -215,11 +230,12 @@ SMODS.Consumable({
         G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_beast',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=3, y=1},
+    cost = 4,
     discovered = false,
     can_use = function(self,card)
         return G.consumeables.config.card_limit > #G.consumeables.cards or card.area == G.consumeables
@@ -234,11 +250,99 @@ SMODS.Consumable({
         end
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    key = 'myth_opus',
+    set = 'Myth',
+    atlas = 'prismmyth',
+    pos = {x=9, y=0},
+    cost = 4,
+    discovered = false,
+    config = {max_highlighted = 1},
+    loc_vars = function(self, info_queue)
+        if G.playing_cards then
+            local enhancements = {}
+            for _,v in ipairs(G.playing_cards) do
+                if v.config.center.key ~= "c_base" then
+                enhancements[v.config.center.key] = (enhancements[v.config.center.key] or 0) + 1
+                end
+            end
+            local pollable_enhance = {}
+            local enhanc_count = 0
+            for k,v in pairs(enhancements) do
+                if v > enhanc_count then
+                    enhanc_count = v
+                    pollable_enhance = {}
+                    table.insert(pollable_enhance,k)
+                elseif v == enhanc_count then
+                    table.insert(pollable_enhance,k)
+                end
+            end
+            local enhancement = #pollable_enhance == 1 and pollable_enhance[1]
+            local enha = enhancement and localize{type = 'name_text', key = enhancement, set = 'Enhanced'} or #pollable_enhance > 1 and localize('k_tied') or localize('k_none')
+            local colour = #pollable_enhance > 1 and G.C.FILTER or not enhancement and G.C.RED or G.C.GREEN
+            return { 
+                vars = {self.config.max_highlighted},
+                main_end = {
+                    {n=G.UIT.C, config={align = "bm", padding = 0.02}, nodes={
+                        {n=G.UIT.C, config={align = "m", colour = colour, r = 0.05, padding = 0.05}, nodes={
+                            {n=G.UIT.T, config={text = ' '..enha..' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.3, shadow = true}},
+                        }}
+                    }}
+                }
+            }
+        end
+        return { vars = { self.config.max_highlighted } }
+	end,
+    can_use = function(self, card)
+		return #G.hand.highlighted <= self.config.max_highlighted and #G.hand.highlighted >= 1
+	end,
+    use = function(self, card, area, copier)
+        local enhancements = {}
+        for _,v in ipairs(G.playing_cards) do
+            if v.config.center.key ~= "c_base" then
+            enhancements[v.config.center.key] = (enhancements[v.config.center.key] or 0) + 1
+            end
+        end
+        local pollable_enhance = {}
+        local enhanc_count = 0
+        for k,v in pairs(enhancements) do
+            if v > enhanc_count then
+                enhanc_count = v
+                pollable_enhance = {}
+                table.insert(pollable_enhance,k)
+            elseif v == enhanc_count then
+                table.insert(pollable_enhance,k)
+            end
+        end
+        local enhancement = pseudorandom_element(pollable_enhance,"opus") 
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+            play_sound('tarot1')
+            card:juice_up(0.3, 0.5)
+            return true end }))
+        for i=1, #G.hand.highlighted do
+            local percent = 1.15 - (i-0.999)/(#G.hand.highlighted-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('card1', percent);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        for i=1, #G.hand.highlighted do
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.4,func = function()
+                if enhancement then
+                    G.hand.highlighted[i]:set_ability(G.P_CENTERS[enhancement])
+                end
+            return true end }))
+        end
+        for i=1, #G.hand.highlighted do
+            local percent = 0.85 + (i-0.999)/(#G.hand.highlighted-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('tarot2', percent, 0.6);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
+    end
+})
+G.PRISM.Consumable({
     key = 'myth_wizard',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=1, y=1},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 3},
     loc_vars = function(self, info_queue)
@@ -271,11 +375,12 @@ SMODS.Consumable({
         G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
     end
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_treant',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=7, y=0},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 3},
     loc_vars = function(self, info_queue)
@@ -308,11 +413,12 @@ SMODS.Consumable({
         G.E_MANAGER:add_event(Event({trigger = 'after',func = function() G.hand:unhighlight_all(); return true end}))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_ooze',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=5, y=0},
+    cost = 4,
     discovered = false,
     config = {seal_conv = G.PRISM.config.old_green and "prism_green_old" or "prism_green", max_highlighted = 1},
     loc_vars = function(self, info_queue)
@@ -334,11 +440,12 @@ SMODS.Consumable({
     end
 })
 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_colossus',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=4, y=1},
+    cost = 4,
     discovered = false,
     config = {seal_conv = "prism_moon", max_highlighted = 1},
     loc_vars = function(self, info_queue)
@@ -360,11 +467,12 @@ SMODS.Consumable({
     end
 
 }) 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_gnome',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=3, y=0},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue+1] = {key = 'tag_prism_gnome', set = 'Tag',specific_vars = {17}}
@@ -380,14 +488,14 @@ SMODS.Consumable({
             add_tag(Tag('tag_prism_gnome'))
         return true end }))
     end
-
 })
 
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_kraken',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=5, y=1},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue+1] = {key = 'tag_juggle', set = 'Tag',specific_vars = {3}}
@@ -404,11 +512,12 @@ SMODS.Consumable({
         return true end }))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_roc',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=6, y=0},
+    cost = 4,
     discovered = false,
     loc_vars = function(self, info_queue)
 		info_queue[#info_queue+1] = {key = 'tag_double', set = 'Tag'}
@@ -425,11 +534,12 @@ SMODS.Consumable({
         return true end }))
     end
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
     key = 'myth_ghoul',
     set = 'Myth',
     atlas = 'prismmyth',
     pos = {x=2, y=1},
+    cost = 4,
     discovered = false,
     config = {max_highlighted = 1,chips_mult = 3},
     loc_vars = function(self, info_queue)
@@ -452,7 +562,7 @@ SMODS.Consumable({
                     local left_card = hand_i and G.hand.cards[hand_i-1]
                     local right_card = hand_i and G.hand.cards[hand_i+1]
                     local chips = SMODS.has_no_rank(target) and 0 or target.base.nominal * card.ability.chips_mult
-                    G.PRISM.destroy_cards({target})
+                    SMODS.destroy_cards({target})
                     if left_card then
                         left_card.ability.perma_bonus = (left_card.ability.perma_bonus or 0) + chips
                         left_card:juice_up(0.3, 0.5)
@@ -490,7 +600,41 @@ SMODS.Consumable({
     end
 
 })
-SMODS.Consumable({
+G.PRISM.Consumable({
+    key = 'myth_fae',
+    set = 'Myth',
+    atlas = 'prismmyth',
+    pos = {x=9, y=1},
+    cost = 4,
+    discovered = false,
+    config = {dollars = 3, max = 30},
+    loc_vars = function(self, info_queue, card)
+        local level = 0
+        for k, v in pairs(G.GAME.hands) do
+            if v.visible and to_big(v.level) > to_big(level) then
+                level = v.level
+            end
+        end
+        return {vars = {self.config.dollars,self.config.max, math.min(self.config.dollars * level, self.config.max)}}
+    end,
+    can_use = function(self,card)
+        return true
+    end,
+    use = function(self, card, area, copier)
+        local level = 0
+        for k, v in pairs(G.GAME.hands) do
+            if v.visible and to_big(v.level) > to_big(level) then
+                level = v.level
+            end
+        end
+        G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.4,func = function()
+            play_sound('tarot1')
+            card:juice_up(0.3, 0.5)
+            ease_dollars(math.min(self.config.dollars * level, self.config.max))
+        return true end }))
+    end
+})
+G.PRISM.Consumable({
     key = 'spectral_djinn',
     set = 'Spectral',
     atlas = 'prismmyth',
@@ -505,11 +649,10 @@ SMODS.Consumable({
     use = function(self, card, area, copier)
         G.E_MANAGER:add_event(Event({
 			func = function()
-				G.GAME.PRISM_DJINN = true
+				G.GAME.prism_choosing_card = "djinn"
 				G.FUNCS.overlay_menu({ 
                     definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, {5,5,5}, {
-                        no_materialize = true, 
-                        modify_card = function(card, center) card.sticker = get_joker_win_sticker(center) end,
+                        no_materialize = true,
                         h_mod = 0.95,
                         back_func = "exit_overlay_menu"
                     })
@@ -665,56 +808,3 @@ SMODS.Booster({
         G.booster_pack_sparkles:fade(1, 0)
     end,
 })
-
---Djinn
-local orig_click = Card.click
-function Card:click()
-    if G.GAME.PRISM_DJINN then
-        if not self.debuff then
-            G.FUNCS:exit_overlay_menu()
-            local card = create_card("Joker", G.jokers, nil, nil, nil, nil,self.config.center.key)
-            card:add_to_deck()
-            G.jokers:emplace(card)
-            play_sound('timpani')
-        end
-    end
-    orig_click(self)
-end
-
-local orig_emplace = CardArea.emplace
-function CardArea:emplace(card, ...)
-    if G.GAME.PRISM_DJINN then
-        if not card.config.center.unlocked then
-           card.debuff = true 
-        else
-            for _, r in ipairs(G.PRISM.djinn_banned_rarities) do
-                if card.config.center.rarity == r then
-                    card.debuff = true
-                end
-            end
-        end
-    end
-    return orig_emplace(self, card, ...)
-end
-
-local orig_exit_overlay_menu = G.FUNCS.exit_overlay_menu
-function G.FUNCS.exit_overlay_menu(e)
-    if G.GAME then G.GAME.PRISM_DJINN = false end
-    return orig_exit_overlay_menu(e)
-end
-
-local orig_start_run = Game.start_run
-function Game:start_run(args)
-    orig_start_run(self, args)
-    G.GAME.PRISM_DJINN = false
-end
-
-local orig_init = Card.init
-function Card:init(X, Y, W, H, card, center, params)
-    if G.GAME and G.GAME.PRISM_DJINN and center.unlocked then
-        if not params then params = {} end
-        params.bypass_discovery_center = true
-        params.bypass_discovery_ui = true
-    end
-    return orig_init(self,X, Y, W, H, card, center, params)
-end

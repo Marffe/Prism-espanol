@@ -8,12 +8,12 @@ Discord Server: https://discord.gg/wy2HTYmn5y
 
 The mod currently adds:
 - A brand new Consumable type: Myth Cards
-- 49 Jokers
-- 17 Consumables
+- 51 Jokers
+- 18 Consumables
 - 4 Enhancements and 2 Seals
 - 1 Edition
-- 3 Decks
-- 3 Card Sleeves (Requires [CardSlevees](https://github.com/larswijn/CardSleeves))
+- 4 Decks
+- 4 Card Sleeves (Requires [CardSlevees](https://github.com/larswijn/CardSleeves))
 - 2 Partners (Requires [Partner API](https://github.com/Icecanno/Partner-API))
 - 4 Vouchers
 - 3 Boss Blinds
@@ -31,7 +31,7 @@ You can see a more detailed list of additions in the mod's [Wiki](https://balatr
 
 # Credits
 - Chinese localization by 姓氏是个毛 and VisJoker
-- Spanish localization by Frander
+- Spanish localization by Frander and Marffe
 - Vietnamese localization by Shinosan
 - French localization by Alexandria Thurnherr, juno_r1 and others
 - Ideas and concept art by Gaussian
