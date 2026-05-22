@@ -879,7 +879,7 @@ return {
                 },
             },
             card_extra_mult = {
-                text={"{C:mult}+#1#{} Multi extra"}
+                text={"{C:mult}#1#{} Multi extra"}
             },
             prism_platinum_sticker={
                 name="Sticker de platino",
