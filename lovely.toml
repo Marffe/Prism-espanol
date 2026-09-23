@@ -256,27 +256,27 @@ context.blueprint = old_blue
 '''
 match_indent = true
 
-#add prism to the startup animation
-[[patches]]
-[patches.pattern]
-target = "game.lua"
-pattern = "SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_joker'])"
-position = "after"
-payload = '''
-SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_prism_prism'],{bypass_discovery_center = true, bypass_discovery_ui = true})
-'''
-match_indent = true
+#add prism to the startup animation - DISABLED
+#[[patches]]
+#[patches.pattern]
+#target = "game.lua"
+#pattern = "SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_joker'])"
+#position = "after"
+#payload = '''
+#SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_prism_prism'],{bypass_discovery_center = true, bypass_discovery_ui = true})
+#'''
+#match_indent = true
 
-#overwrite cryptids jolly_joker, because prisms are cooler
-[[patches]]
-[patches.pattern]
-target = "game.lua"
-pattern = "SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_jolly'],{bypass_discovery_center = true, bypass_discovery_ui = true})"
-position = "after"
-payload = '''
-SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_prism_prism'],{bypass_discovery_center = true, bypass_discovery_ui = true})
-'''
-match_indent = true
+#overwrite cryptids jolly_joker - DISABLED
+#[[patches]]
+#[patches.pattern]
+#target = "game.lua"
+#pattern = "SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_jolly'],{bypass_discovery_center = true, bypass_discovery_ui = true})"
+#position = "after"
+#payload = '''
+#SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, G.P_CENTERS['j_prism_prism'],{bypass_discovery_center = true, bypass_discovery_ui = true})
+#'''
+#match_indent = true
 
 #romantic warrior
 [[patches]]
